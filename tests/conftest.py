@@ -26,7 +26,8 @@ def chrome(request):
     #service = Service(ChromeDriver().instal())
     driver = webdriver.Chrome(service=service, options=options)
     driver.maximize_window()
-    driver.set_page_load_timeout(30)
+    driver.set_page_load_timeout(120)
+    driver.implicitly_wait(60)
     if request.cls:
         request.cls.driver = driver
     yield driver

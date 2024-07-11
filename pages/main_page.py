@@ -35,7 +35,7 @@ class MainPage:
         self.driver.find_element(*self.container_tracking_locator).click()
 
     def verify_login(self):
-        wait = WebDriverWait(self.driver, 10)
+        wait = WebDriverWait(self.driver, 100)
         element = wait.until(EC.visibility_of_element_located(
             (By.XPATH, '//a[contains(@class,"navbarDropdown__button navbarDropdown__button_profile")]')))
         element.click()

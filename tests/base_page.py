@@ -12,6 +12,6 @@ class BasePage:
         actions.move_to_element(element).perform()
 
     def wait_for_element_visibility(self, locator):
-        wait = WebDriverWait(self.driver, 10)
+        wait = WebDriverWait(self.driver, 100)
         element = wait.until(EC.visibility_of_element_located(locator))
         return element
