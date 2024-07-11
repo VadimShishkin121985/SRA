@@ -4,7 +4,7 @@ import pytest
 from selenium import webdriver
 
 from webdriver_manager.chrome import ChromeDriverManager
-#from webdriver_manager.firefox import GeckoDriverManager
+
 from selenium.webdriver.chrome.service import Service
 
 import os
@@ -14,7 +14,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-# Фикстура для инициализации одного экземпляра браузера на всю сессию
 @pytest.fixture(scope='class')
 def chrome(request):
     options = webdriver.ChromeOptions()
