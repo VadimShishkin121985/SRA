@@ -52,6 +52,7 @@ class MenuTools:
 
     def go_to_logistic_explorer_page(self):
         self.move_mouse_to_tools()
+        time.sleep(10)
         self.driver.find_element(*self.logistic_explorer_locator).click()
         self.waiter_with_assert('._2v2R_4lQUyzttSmoiQzYMT')
         pass
