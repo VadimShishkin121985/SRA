@@ -10,13 +10,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: setup Python
+
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       - name: Install Google Chrome
         run: brew install --cask google-chrome
-      - name: install dependencies
-        run: pip install -r requirements.txt
+
+      - name: Install ChromeDriver
+        run: brew install chromedriver
+
+      - name: Configure ChromeDriver
+        run: |
+          ln -s /usr/local/bin/chromedriver /usr/bin/chromedriver
+
       - name: Run tests
-        run: pytest
+        run: pytest --headless
