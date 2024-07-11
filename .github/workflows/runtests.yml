@@ -22,12 +22,6 @@ jobs:
       - name: Install Google Chrome
         run: brew install --cask google-chrome
 
-      - name: Setup Chrome driver
-        run: echo "Using Chrome version $(google-chrome --version)"
-
-      - name: Run Selenium tests
-        run: pytest tests/ --headless
-
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings -v
