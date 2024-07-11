@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -15,8 +15,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Google Chrome
-        run: choco install googlechrome --no-progress
-        shell: powershell
+        run: brew install --cask google-chrome
       - name: install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
