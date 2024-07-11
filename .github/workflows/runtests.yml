@@ -22,12 +22,5 @@ jobs:
       - name: Install Google Chrome
         run: brew install --cask google-chrome
 
-      - name: Install ChromeDriver
-        run: brew install chromedriver
-
-      - name: Configure ChromeDriver
-        run: |
-          ln -s /usr/local/bin/chromedriver /usr/bin/chromedriver
-
       - name: Run tests
         run: pytest --headless
