@@ -14,8 +14,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - name: Install Chrome
-        run: sudo apt-get install google-chrome-stable
+      - name: Install Google Chrome
+        run: choco install googlechrome --no-progress
+        shell: powershell
       - name: install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
