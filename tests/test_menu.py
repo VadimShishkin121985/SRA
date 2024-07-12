@@ -4,6 +4,8 @@ import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
 import time
 
+from pages import request_a_quote_page
+from pages.main_page import MainPage
 from pages.menu_pages.footer_page import MenuFooter
 from pages.menu_pages.menu_company import MenuCompany
 from pages.menu_pages.menu_references import MenuReferences
@@ -16,6 +18,10 @@ class Test:
     def setup_method(self):
         self.driver: WebDriver = self.driver
         self.page_menu_tools = MenuTools(self.driver).open()
+
+    def test_quick_request_button(self):
+        self.main_page = MainPage(self.driver).open
+        self.main_page.request_qute()
 
     def test_menu_tools(self):
         self.page_menu_tools.go_to_logistic_explorer_page()
