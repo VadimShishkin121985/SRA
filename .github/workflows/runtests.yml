@@ -1,4 +1,3 @@
-
 name: Automated tests
 
 on:
@@ -15,37 +14,44 @@ jobs:
     runs-on: ubuntu-latest
     name: Download history
     steps:
-      - name: setup Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - run: >
-          ARTIFACT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=allure-results" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
+      - run: |
+          ARTIFACT_ID=$(curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=allure-results" \
+          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") \
           &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip 
+          curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip \
           -o artifacts.zip &&
-          REPORT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=github-pages" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
+          REPORT_ID=$(curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=github-pages" \
+          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") \
           &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip 
+          curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip \
           -o pages.zip
       - run: mkdir allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
+      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages
+      - run: ls old_pages # Вывести список файлов в old_pages для отладки
+      - run: |
+          if [ -f old_pages/artifact.tar ]; then
+            tar -xvf old_pages/artifact.tar -C pages_history
+          else
+            echo "artifact.tar not found, skipping tar extraction."
+          fi
       - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
       - name: Store allure history
         uses: actions/upload-artifact@v3
@@ -54,7 +60,7 @@ jobs:
           path:
             allure-results
           retention-days: 1
-  
+
   test:
     runs-on: ubuntu-latest
     needs: download-history
@@ -62,13 +68,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: setup Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
-      - name: install dependencies
+      - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -83,7 +89,7 @@ jobs:
           name: allure-results
           path: allure-results
           retention-days: 10
-  
+
   generate-report:
     runs-on: ubuntu-latest
     needs: test
@@ -117,5 +123,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
-      
-    
