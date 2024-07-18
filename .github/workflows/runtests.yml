@@ -99,7 +99,7 @@ jobs:
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results
-          continue-on-error: true
+        continue-on-error: true
       - name: Store allure ressults
         uses: actions/upload-artifact@v3
         with:
