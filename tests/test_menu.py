@@ -18,27 +18,50 @@ class Test:
     def setup_method(self):
         self.driver: WebDriver = self.driver
         self.page_menu_tools = MenuTools(self.driver).open()
+        self.main_page = MainPage(self.driver).open
 
     def test_quick_request_button(self):
-        self.main_page = MainPage(self.driver).open
         self.main_page.request_qute()
 
-    def test_menu_tools(self):
+    def test_menu_tools_le(self):
         self.page_menu_tools.go_to_logistic_explorer_page()
+
+    def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
         #self.page_menu_tools.go_to_air_tracking_page()
+    def test_menu_tools_shdule(self):
         self.page_menu_tools.go_to_schedules_page()
+
+    def test_menu_tools_lm(self):
         self.page_menu_tools.go_to_logistics_map_page()
+
+    def test_menu_tools_dt(self):
         self.page_menu_tools.go_to_distance_and_time_page()
+
+    def test_menu_tools_lc(self):
         self.page_menu_tools.go_to_load_calculator_page()
+
+    def test_menu_tools_fi(self):
         self.page_menu_tools.go_to_freight_index_page()
+
+    def test_menu_tools_route_plaer(self):
         self.page_menu_tools.go_to_route_planer_page()
+
+    def test_menu_tools_co2(self):
         self.page_menu_tools.go_to_co2_page()
+
+    def test_menu_tools_erp(self):
         self.page_menu_tools.go_to_erp_page()
+
+    def test_menu_tools_dev_portal(self):
         self.page_menu_tools.go_to_developer_portal_page()
+
+    def test_menu_tools_fid_tools(self):
         self.page_menu_tools.go_to_find_a_tools_page()
+
+    def test_menu_request_quote(self):
         self.page_menu_tools.go_to_request_it_quote_page()
-        pass
+
 
     def test_menu_services(self):
         self.page_menu_services = MenuServices(self.driver).open()
