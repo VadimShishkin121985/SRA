@@ -52,7 +52,12 @@ jobs:
           else
             echo "artifact.tar not found, skipping tar extraction."
           fi
-      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+      - run: |
+          if [ -d pages_history/history ]; then
+            cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+          else
+            echo "No history directory found in pages_history, skipping copy."
+          fi
       - name: Store allure history
         uses: actions/upload-artifact@v3
         with:
