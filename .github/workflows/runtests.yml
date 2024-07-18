@@ -17,7 +17,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-            python-version: "3.10"
+          python-version: "3.10"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: |
@@ -57,28 +57,23 @@ jobs:
           fi
       - run: |
           mkdir -p allure-results old_pages pages_history
-          if [ -f artifacts.zip ] && [ -s artifacts.zip ]; then
-            unzip artifacts.zip -d allure-results
+          if [ -f "artifacts.zip" ]; then
+            unzip artifacts.zip -d allure-results || echo "No valid artifact zip found."
           else
-            echo "No artifacts.zip found or it is empty"
+            echo "No artifacts.zip file found."
           fi
-          if [ -f pages.zip ] && [ -s pages.zip ]; then
-            unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
+          if [ -f "pages.zip" ]; then
+            unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history || echo "No valid pages zip found."
           else
-            echo "No pages.zip found or it is empty"
+            echo "No pages.zip file found."
           fi
-      - run: |
-          if [ -d pages_history/history ]; then
-            cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
-          else
-            echo "No history directory found in pages_history"
-          fi
+          cp -r pages_history/history/* allure-results/ || echo "No history files to copy."
+          cp -r pages_history/history allure-results/ || echo "No history directory to copy."
       - name: Store allure history
         uses: actions/upload-artifact@v4
         with:
           name: allure_results
-          path:
-            allure-results
+          path: allure-results
           retention-days: 10
 
   test:
@@ -107,7 +102,7 @@ jobs:
           sudo apt-get install -y google-chrome-stable
 
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Run tests
         run: |
@@ -117,8 +112,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path:
-            allure-results
+          path: allure-results
           retention-days: 10
 
   generate-report:
@@ -130,7 +124,10 @@ jobs:
         with:
           distribution: 'microsoft'
           java-version: '17'
-      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+      - run: |
+          sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz
+          sudo tar -zxvf allure-2.23.1.tgz -C /opt/
+          sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - run: allure generate -c allure-results -o _site
@@ -138,9 +135,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: _site
-          path:
-            _site
-          retention-day: 10
+          path: _site
+          retention-days: 10
 
   publish-report:
     runs-on: ubuntu-latest
