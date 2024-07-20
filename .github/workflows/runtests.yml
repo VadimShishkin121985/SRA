@@ -54,7 +54,7 @@ jobs:
           fi
       - run: |
           if [ -d pages_history/history ]; then
-            cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+            cp -r pages_history/history allure-results/history || echo "No history directory found, skipping copy."
           else
             echo "No history directory found in pages_history, skipping copy."
           fi
@@ -63,7 +63,7 @@ jobs:
         with:
           name: allure-results
           path: allure-results
-          retention-days: 1
+          retention-days: 10
 
   test:
     runs-on: ubuntu-latest
@@ -106,6 +106,10 @@ jobs:
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
+      - run: |
+          if [ -d allure-results/history ]; then
+            mkdir -p _site/history && cp -r allure-results/history/* _site/history
+          fi
       - run: allure generate -c allure-results -o _site
       - run: ls _site # Отладка содержимого _site
       - name: Store generated report
@@ -113,7 +117,7 @@ jobs:
         with:
           name: _site
           path: _site
-          retention-days: 1
+          retention-days: 10
 
   publish-report:
     runs-on: ubuntu-latest
