@@ -1,7 +1,15 @@
 name: Automated tests
 
 on:
-  push
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      test_file:
+        description: 'Test file to run (Test1.py, Test2.py, Test3.py, or all)'
+        required: true
+        default: 'all'
 
 permissions:
   contents: read
@@ -85,7 +93,11 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results
+          if [ "${{ github.event.inputs.test_file }}" == "all" ]; then
+            pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results
+          else
+            pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results ${{ github.event.inputs.test_file }}
+          fi
         continue-on-error: true
       - name: Store allure results
         uses: actions/upload-artifact@v4
