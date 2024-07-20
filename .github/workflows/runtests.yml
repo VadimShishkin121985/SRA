@@ -1,4 +1,3 @@
-
 name: Automated tests
 
 on:
@@ -54,13 +53,13 @@ jobs:
           && unzip -l pages.zip || (echo "Failed to unzip. Displaying contents:" && cat pages.zip)
       - run: |
           if [ -f artifacts.zip ]; then
-            mkdir allure-results && unzip artifacts.zip -d allure-results
+            mkdir allure-results && unzip artifacts.zip -d allure-results || (echo "Failed to unzip artifacts.zip. Displaying contents:" && cat artifacts.zip)
           else
             echo "artifacts.zip not found, skipping unzip."
           fi
       - run: |
           if [ -f pages.zip ]; then
-            mkdir old_pages pages_history && unzip pages.zip -d old_pages
+            mkdir old_pages pages_history && unzip pages.zip -d old_pages || (echo "Failed to unzip pages.zip. Displaying contents:" && cat pages.zip)
           else
             echo "pages.zip not found, skipping unzip."
           fi
