@@ -92,12 +92,12 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - name: Check allure-results directory
-        run: ls -l allure-results # Verify allure-results content
+        run: ls -l allure-results # Проверка содержимого allure-results
       - name: Generate Allure report
         run: |
-          allure generate -c allure-results -o _site
+          allure generate -c allure-results -o _site || echo "Allure report generation failed"
       - name: Debug _site directory
-        run: ls -l _site # Debug contents of _site
+        run: ls -l _site || echo "_site directory does not exist"
       - name: Store generated report
         uses: actions/upload-artifact@v4
         with:
@@ -112,7 +112,7 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      - run: ls -l _site # Debug before upload
+      - run: ls -l _site || echo "_site directory does not exist before upload"
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
       - name: Deploy to GitHub Pages
