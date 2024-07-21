@@ -141,12 +141,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Check _site directory before upload
-        run: ls -la _site || echo "_site directory does not exist before upload"
+        run: |
+          if [ -d "_site" ]; then
+            echo "Directory _site exists, proceeding to upload"
+          else
+            echo "Directory _site does not exist, exiting with error"
+            exit 1
+          fi
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
           name: github-pages
-          path: _site/
+          path: "_site/" # Added underscore to ensure correct path
           retention-days: 1
       - name: Deploy to GitHub Pages
         id: deployment
