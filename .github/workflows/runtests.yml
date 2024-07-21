@@ -75,9 +75,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path:
-            allure-results
+          path: allure-results
           retention-days: 10
+          overwrite: true
 
   generate-report:
     runs-on: ubuntu-latest
@@ -92,11 +92,11 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - run: allure generate -c allure-results -o _site
-      - run: ls _site # Отладка содержимого _site
+      - run: ls _site # Debugging contents of _site
       - name: Store generated report
         uses: actions/upload-artifact@v4
         with:
-          name: _site
+          name: _site-${{ github.run_id }}-${{ github.run_number }}
           path: _site
           retention-days: 10
 
@@ -107,7 +107,7 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      - run: ls _site # Отладка перед загрузкой
+      - run: ls _site # Debugging before upload
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
       - name: Deploy to GitHub Pages
