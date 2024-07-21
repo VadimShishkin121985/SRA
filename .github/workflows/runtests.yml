@@ -67,9 +67,9 @@ jobs:
         run: pip install -r requirements.txt
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      - name: Run tests
+      - name: Run limited tests
         run: |
-          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results
+          pytest --maxfail=5 --disable-warnings -v --alluredir=allure-results --count=3
         continue-on-error: true
       - name: Store allure results
         uses: actions/upload-artifact@v4
@@ -112,9 +112,14 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      - run: ls -l _site || echo "_site directory does not exist before upload"
+      - name: Check _site directory
+        run: ls -l _site || echo "_site directory does not exist before upload"
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
+        with:
+          name: github-pages
+          path: _site/
+          retention-days: 1
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
