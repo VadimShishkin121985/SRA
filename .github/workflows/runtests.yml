@@ -104,6 +104,13 @@ jobs:
           ls -la _site || echo "_site directory does not exist"
           ls -la allure-results || echo "allure-results directory does not exist"
       - name: Store generated report
+        run: |
+          if [ -d "_site" ]; then
+            echo "Directory _site exists, proceeding to upload"
+          else
+            echo "Directory _site does not exist, exiting with error"
+            exit 1
+          fi
         uses: actions/upload-artifact@v4
         with:
           name: _site-${{ github.run_id }}-${{ github.run_number }}
