@@ -42,7 +42,7 @@ jobs:
           -o pages.zip
       - run: mkdir -p allure-results && unzip artifacts.zip -d allure-results
       - run: mkdir -p old_pages pages_history && unzip pages.zip -d old_pages
-      - run: ls old_pages # Display list of files in old_pages for debugging
+      - run: ls old_pages # Вывести список файлов в old_pages для отладки
       - run: |
           if [ -f old_pages/artifact.tar ]; then
             tar -xvf old_pages/artifact.tar -C pages_history
@@ -56,7 +56,7 @@ jobs:
             echo "No history directory found in pages_history, skipping copy."
           fi
       - name: Store allure history
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -78,7 +78,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results
@@ -104,11 +104,11 @@ jobs:
           sudo tar -zxvf allure-2.23.1.tgz -C /opt/
           sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - run: allure generate -c allure-results -o _site
-      - run: ls _site # Debug contents of _site
+      - run: ls _site # Отладка содержимого _site
       - name: Store generated report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: _site
           path: _site
@@ -120,12 +120,12 @@ jobs:
     name: Report publication
     steps:
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
-      - run: ls _site # Debug before upload
+        uses: actions/download-artifact@v4
+      - run: ls _site # Отладка перед загрузкой
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: _site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1.2.9
+        uses: actions/deploy-pages@v1
