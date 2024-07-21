@@ -8,6 +8,7 @@ permissions:
   pages: write
   id-token: write
 
+
 jobs:
   download-history:
     runs-on: ubuntu-latest
