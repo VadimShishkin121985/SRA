@@ -78,9 +78,9 @@ jobs:
 
           # Проверка кода ответа HTTP
           if [ "$response" -eq 410 ]; then
-            echo "Artifact 'github-pages' has expired."
+            echo "Artifact 'github-pages' has expired. Continuing without it."
             rm -f pages.zip
-            exit 1
+            touch pages.zip
           elif [ "$response" -ne 200 ]; then
             echo "Failed to download artifact. HTTP code: $response"
             exit 1
@@ -97,7 +97,7 @@ jobs:
 
       - run: mkdir -p allure-results && unzip artifacts.zip -d allure-results
       - run: mkdir -p old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history || { echo "Failed to extract pages.zip"; exit 1; }
-      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results || echo "No history files found to copy"
 
       - name: Store allure history
         uses: actions/upload-artifact@v3
