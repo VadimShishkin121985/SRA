@@ -9,68 +9,61 @@ permissions:
   id-token: write
 
 jobs:
-  fetch-artifact:
+  download-history:
     runs-on: ubuntu-latest
+    name: Download history
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-
-      - name: Fetch and Handle Artifact
-        run: |
-          set -e
-
-          # Fetch artifact IDs
-          ARTIFACT_ID=$(curl -s -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts" \
-            | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
-          
-          if [ -z "$ARTIFACT_ID" ]; then
-            echo "No artifact found with the name 'test-results'"
-            exit 1
+          python-version: "3.10"
+      - run: |
+          ARTIFACT_ID=$(curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=allure-results" \
+          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") \
+          && curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip" \
+          -o artifacts.zip
+      - run: |
+          REPORT_ID=$(curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=github-pages" \
+          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") \
+          && curl -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip" \
+          -o pages.zip
+      - run: mkdir allure-results && unzip artifacts.zip -d allure-results
+      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages
+      - run: ls old_pages # Вывести список файлов в old_pages для отладки
+      - run: |
+          if [ -f old_pages/artifact.tar ]; then
+            tar -xvf old_pages/artifact.tar -C pages_history
+          else
+            echo "artifact.tar not found, skipping tar extraction."
           fi
-          
-          echo "Artifact ID: $ARTIFACT_ID"
-          
-          # Download the artifact
-          response_code=$(curl -L -s -w "%{http_code}" -o test-results.zip \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: ***" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip")
-          
-          # Check for artifact expiration or other issues
-          if [ "$response_code" -eq 410 ]; then
-            echo "Artifact 'test-results' has expired. Continuing without it."
-            touch test-results.zip
-          elif [ "$response_code" -ne 200 ]; then
-            echo "Failed to download artifact. HTTP code: $response_code"
-            exit 1
+      - run: |
+          if [ -d pages_history/history ]; then
+            cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+          else
+            echo "No history directory found in pages_history, skipping copy."
           fi
-          
-          echo "Contents of test-results.zip:"
-          head -c 200 test-results.zip
-          file test-results.zip
-          
-          # Check if the file is a valid ZIP
-          if ! unzip -t test-results.zip >/dev/null 2>&1; then
-            echo "The downloaded file is not a valid ZIP file or is empty."
-            exit 1
-          fi
-          
-          # Unzip the artifact
-          mkdir -p test-results
-          unzip test-results.zip -d test-results || echo "Unzip failed or no files extracted."
-        shell: bash
-
-      - name: Store downloaded test results
+      - name: Store allure history
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
-          path: test-results
-          retention-days: 10
+          name: allure-results
+          path: allure-results
+          retention-days: 1
 
   test:
     runs-on: ubuntu-latest
@@ -108,7 +101,7 @@ jobs:
     steps:
       - uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft'
+          distribution: 'microsoft' # See 'Supported distributions' for available options
           java-version: '17'
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
@@ -120,7 +113,7 @@ jobs:
         with:
           name: _site
           path: _site
-          retention-days: 10
+          retention-days: 1
 
   publish-report:
     runs-on: ubuntu-latest
