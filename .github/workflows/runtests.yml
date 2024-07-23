@@ -68,7 +68,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip" \
-            -o pages.zip
+            -o pages.zip || { echo "Failed to download pages.zip"; exit 1; }
 
           echo "Contents of pages.zip:"
           head -c 200 pages.zip
@@ -80,7 +80,7 @@ jobs:
           fi
 
       - run: mkdir -p allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir -p old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
+      - run: mkdir -p old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history || { echo "Failed to extract pages.zip"; exit 1; }
       - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
 
       - name: Store allure history
@@ -126,7 +126,7 @@ jobs:
     steps:
       - uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
+          distribution: 'microsoft'
           java-version: '17'
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
