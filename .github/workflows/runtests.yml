@@ -18,7 +18,6 @@ jobs:
         with:
           python-version: "3.10"
       - name: Get Allure Results Artifact ID
-        id: get-allure-results-id
         run: |
           ARTIFACT_ID=$(curl -L \
           -H "Accept: application/vnd.github+json" \
@@ -27,6 +26,7 @@ jobs:
           "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=allure-results" \
           | python -c "import sys, json; artifacts=json.load(sys.stdin)['artifacts']; print(artifacts[0]['id'] if artifacts else '');") \
           && echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
+
       - name: Download Allure Results Artifact
         run: |
           if [ -z "$ARTIFACT_ID" ]; then
@@ -34,26 +34,16 @@ jobs:
             exit 1
           fi
 
-          retries=3
-          until [ $retries -le 0 ]; do
-            curl -L \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip" \
-              -o artifacts.zip && break
-            retries=$((retries - 1))
-            sleep 5
-          done
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip" \
+            -o artifacts.zip
 
-          if ! unzip -t artifacts.zip; then
-            echo "The downloaded file is not a valid ZIP file."
-            exit 1
-          fi
-      - run: mkdir allure-results && unzip artifacts.zip -d allure-results
+          unzip artifacts.zip -d allure-results
 
       - name: Get GitHub Pages Artifact ID
-        id: get-pages-id
         run: |
           REPORT_ID=$(curl -L \
           -H "Accept: application/vnd.github+json" \
@@ -62,6 +52,7 @@ jobs:
           "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=github-pages" \
           | python -c "import sys, json; artifacts=json.load(sys.stdin)['artifacts']; print(artifacts[0]['id'] if artifacts else '');") \
           && echo "REPORT_ID=$REPORT_ID" >> $GITHUB_ENV
+
       - name: Download GitHub Pages Artifact
         run: |
           if [ -z "$REPORT_ID" ]; then
@@ -69,23 +60,17 @@ jobs:
             exit 1
           fi
 
-          retries=3
-          until [ $retries -le 0 ]; do
-            curl -L \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip" \
-              -o pages.zip && break
-            retries=$((retries - 1))
-            sleep 5
-          done
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip" \
+            -o pages.zip
 
-          if ! unzip -t pages.zip; then
-            echo "The downloaded file is not a valid ZIP file."
-            exit 1
-          fi
-      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
+          unzip pages.zip -d old_pages
+          tar -xvf old_pages/artifact.tar -C pages_history
+
+      - run: mkdir -p allure-results old_pages pages_history
       - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
       - name: Store allure history
         uses: actions/upload-artifact@v3
@@ -136,7 +121,7 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
       - run: allure generate -c allure-results -o _site
-      - run: ls _site # Отладка содержимого _site
+      - run: ls _site
       - name: Store generated report
         uses: actions/upload-artifact@v3
         with:
@@ -151,7 +136,7 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
-      - run: ls _site # Отладка перед загрузкой
+      - run: ls _site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
         with:
