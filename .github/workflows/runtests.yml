@@ -64,7 +64,6 @@ jobs:
           name: allure-results
           path: allure-results
           retention-days:
-
   test:
     runs-on: ubuntu-latest
     needs: download-history
