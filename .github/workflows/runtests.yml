@@ -51,7 +51,8 @@ jobs:
           name: allure-results
           path:
             allure-results
-          retention-days:
+          retention-days: 10
+
   test:
     runs-on: ubuntu-latest
     needs: download-history
@@ -100,7 +101,7 @@ jobs:
         with:
           name: _site
           path: _site
-          retention-days: 1
+          retention-days: 10
 
   publish-report:
     runs-on: ubuntu-latest
