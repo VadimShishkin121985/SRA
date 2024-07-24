@@ -43,8 +43,8 @@ jobs:
           "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip"
           -o pages.zip
       - run: mkdir allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
-      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
+      - run: unzip pages.zip -d old_pages
+      - run: cp -r old_pages/history/* allure-results/history/
       - name: Store allure history
         uses: actions/upload-artifact@v3
         with:
