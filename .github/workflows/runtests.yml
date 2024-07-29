@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   download-history:
+
     runs-on: ubuntu-latest
     name: Download history
     steps:
