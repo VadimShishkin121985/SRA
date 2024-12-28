@@ -9,19 +9,45 @@ permissions:
   id-token: write
 
 jobs:
+  download-history:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+
+      - name: Create history directory
+        run: |
+          mkdir -p allure-history/history
+          echo "Created allure-history directory"
+
+      - name: Try to download previous history
+        continue-on-error: true
+        run: |
+          HISTORY_URL="https://github.com/${{ github.repository }}/gh-pages/history"
+          if curl --output /dev/null --silent --head --fail "$HISTORY_URL"; then
+            echo "Downloading history from $HISTORY_URL"
+            curl -L "$HISTORY_URL/history-trend.json" -o allure-history/history/history-trend.json || true
+            curl -L "$HISTORY_URL/categories-trend.json" -o allure-history/history/categories-trend.json || true
+            curl -L "$HISTORY_URL/duration-trend.json" -o allure-history/history/duration-trend.json || true
+            curl -L "$HISTORY_URL/retry-trend.json" -o allure-history/history/retry-trend.json || true
+          else
+            echo "No history found at $HISTORY_URL"
+          fi
+
+      - name: Store history
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-history
+          path: allure-history
+          retention-days: 1
+
   test:
+    needs: download-history
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
-      - name: Download previous history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -34,12 +60,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Get Allure history
-        run: |
-          mkdir -p allure-results/history
-          if [ -d "gh-pages/history" ]; then
-            cp -r gh-pages/history/* allure-results/history/
-          fi
+      - name: Download history
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-history
+          path: allure-results
+        continue-on-error: true
 
       - name: Run tests
         run: |
@@ -58,11 +84,6 @@ jobs:
     needs: test
     name: Generate report
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
       - uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
@@ -82,21 +103,13 @@ jobs:
       - name: Generate Report
         run: |
           allure generate allure-results -o _site --clean
-          echo "<!DOCTYPE html><meta http-equiv=\"refresh\" content=\"0; url=index.html\">" > _site/index.htm
 
-      - name: Store history
-        if: always()
-        run: |
-          mkdir -p gh-pages/history
-          cp -r _site/history/* gh-pages/history/ || true
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Store generated report
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: _site
-          force_orphan: true
+          name: _site
+          path: _site
+          retention-days: 1
 
   publish-report:
     runs-on: ubuntu-latest
