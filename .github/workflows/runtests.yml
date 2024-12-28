@@ -9,37 +9,7 @@ permissions:
   id-token: write
 
 jobs:
-  download-history:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Get Previous History
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Prepare History
-        run: |
-          mkdir -p allure-results/history
-          if [ -d "gh-pages/history" ]; then
-            cp -r gh-pages/history/* allure-results/history/
-          fi
-        continue-on-error: true
-
-      - name: Store allure history
-        uses: actions/upload-artifact@v3
-        with:
-          name: allure-history
-          path: allure-results
-          retention-days: 1
-
   test:
-    needs: download-history
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -53,11 +23,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Download history
-        uses: actions/download-artifact@v3
-        with:
-          name: allure-history
-          path: allure-results
+      - name: Create history directory
+        run: |
+          mkdir -p allure-results/history
         continue-on-error: true
 
       - name: Run tests
@@ -93,17 +61,11 @@ jobs:
           name: allure-results
           path: allure-results
 
-      - name: Download history
-        uses: actions/download-artifact@v3
-        with:
-          name: allure-history
-          path: allure-results
-        continue-on-error: true
-
       - name: Generate Report
         run: |
           allure generate allure-results -o _site --clean
-          cp -r allure-results/history _site/history || true
+          mkdir -p _site/history
+          cp -r allure-results/history/* _site/history/ || true
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
@@ -120,7 +82,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download all workflow run artifacts
+      - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: _site
@@ -133,6 +95,5 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-
         uses: actions/deploy-pages@v1.2.9
 
