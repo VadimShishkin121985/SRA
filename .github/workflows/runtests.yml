@@ -4,7 +4,7 @@ on:
   push
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -50,9 +50,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: allure-results
-          path: |
-            allure-results
-            gh-pages/history
+          path: allure-results
           retention-days: 1
 
   generate-report:
@@ -60,6 +58,11 @@ jobs:
     needs: test
     name: Generate report
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
@@ -79,22 +82,21 @@ jobs:
       - name: Generate Report
         run: |
           allure generate allure-results -o _site --clean
-          cp -r allure-results/history/* _site/history/ || true
+          echo "<!DOCTYPE html><meta http-equiv=\"refresh\" content=\"0; url=index.html\">" > _site/index.htm
 
       - name: Store history
         if: always()
         run: |
-          mkdir -p allure-results/history
-          cp -r _site/history/* allure-results/history/
+          mkdir -p gh-pages/history
+          cp -r _site/history/* gh-pages/history/ || true
 
-      - name: Store generated report
-        uses: actions/upload-artifact@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: _site
-          path: |
-            _site
-            allure-results/history
-          retention-days: 1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: _site
+          force_orphan: true
 
   publish-report:
     runs-on: ubuntu-latest
