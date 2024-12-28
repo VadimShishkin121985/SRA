@@ -30,33 +30,29 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install allure-pytest
-        pip install pytest-allure-adaptor
 
     - name: Run tests with pytest and generate Allure report
       run: |
-        mkdir allure-results
-        pytest --alluredir=allure-results tests/ -v
+        mkdir -p allure-results
+        pytest --alluredir=allure-results tests/ -v --allure-stories -v
       continue-on-error: true
       env:
         API_KEY: ${{ secrets.API_KEY }}
 
-    - name: Get Allure history
-      uses: actions/checkout@v3
-      if: always()
-      continue-on-error: true
-      with:
-        ref: gh-pages
-        path: gh-pages
+    - name: Debug Allure Results
+      run: |
+        ls -la allure-results/
+        echo "Contents of allure-results directory:"
+        find allure-results -type f
 
     - name: Store allure results
-      uses: actions/upload-artifact@v4
       if: always()
+      uses: actions/upload-artifact@v4
       with:
         name: allure-results
-        path: |
-          allure-results
-          test-results
-        retention-days: 10
+        path: allure-results/
+        retention-days: 1
+        if-no-files-found: error
 
   generate-report:
     runs-on: ubuntu-latest
@@ -77,11 +73,19 @@ jobs:
           sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
           allure --version
 
-      - name: Download all workflow run artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: allure-results
           path: allure-results
+
+      - name: Debug Downloaded Artifacts
+        run: |
+          ls -la
+          echo "Contents of current directory:"
+          find . -type f
+          echo "Contents of allure-results:"
+          ls -la allure-results/
 
       - name: Generate Allure Report
         run: |
@@ -94,7 +98,8 @@ jobs:
         with:
           name: _site
           path: _site
-          retention-days: 10
+          retention-days: 1
+          if-no-files-found: error
 
   publish-report:
     runs-on: ubuntu-latest
