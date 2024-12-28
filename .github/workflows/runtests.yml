@@ -14,19 +14,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        
+      - name: Download previous history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+          
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
+        
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Create history directory
+      - name: Get Allure history
         run: |
           mkdir -p allure-results/history
-        continue-on-error: true
+          if [ -d "gh-pages/history" ]; then
+            cp -r gh-pages/history/* allure-results/history/
+          fi
 
       - name: Run tests
         run: |
@@ -37,7 +50,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: allure-results
-          path: allure-results
+          path: |
+            allure-results
+            gh-pages/history
           retention-days: 1
 
   generate-report:
@@ -64,14 +79,21 @@ jobs:
       - name: Generate Report
         run: |
           allure generate allure-results -o _site --clean
-          mkdir -p _site/history
           cp -r allure-results/history/* _site/history/ || true
+
+      - name: Store history
+        if: always()
+        run: |
+          mkdir -p allure-results/history
+          cp -r _site/history/* allure-results/history/
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
         with:
           name: _site
-          path: _site
+          path: |
+            _site
+            allure-results/history
           retention-days: 1
 
   publish-report:
