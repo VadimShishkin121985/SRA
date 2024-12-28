@@ -34,7 +34,7 @@ jobs:
     - name: Run tests with pytest and generate Allure report
       run: |
         mkdir -p allure-results
-        pytest --alluredir=allure-results tests/ -v --allure-stories -v
+        pytest tests/ -v --alluredir=allure-results --allure-features --allure-stories --allure-epics
       continue-on-error: true
       env:
         API_KEY: ${{ secrets.API_KEY }}
