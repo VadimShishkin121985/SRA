@@ -9,7 +9,45 @@ permissions:
   id-token: write
 
 jobs:
+  download-history:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          
+      - name: Download Allure history
+        run: |
+          ARTIFACT_ID=$(curl -L 
+          -H "Accept: application/vnd.github+json" 
+          -H "X-GitHub-Api-Version: 2022-11-28" 
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=allure-results" 
+          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
+          &&
+          curl -L 
+          -H "Accept: application/vnd.github+json" 
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" 
+          -H "X-GitHub-Api-Version: 2022-11-28" 
+          https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID/zip 
+          -o artifacts.zip
+        continue-on-error: true
+
+      - name: Extract history
+        run: |
+          mkdir -p allure-results
+          unzip artifacts.zip -d allure-results || true
+        continue-on-error: true
+
+      - name: Store allure history
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-history
+          path: allure-results
+          retention-days: 1
+
   test:
+    needs: download-history
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,6 +60,13 @@ jobs:
         run: sudo apt-get install google-chrome-stable
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Download history
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-history
+          path: allure-results
+        continue-on-error: true
 
       - name: Run tests
         run: |
@@ -52,6 +97,9 @@ jobs:
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
+        with:
+          name: allure-results
+          path: allure-results
 
       - run: allure generate -c allure-results -o _site
 
