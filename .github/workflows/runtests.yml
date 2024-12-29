@@ -21,25 +21,21 @@ jobs:
           mkdir -p allure-history/history
           echo "Created allure-history directory"
 
+      - name: Debug history URL
+        run: |
+          HISTORY_URL="https://$VadimShishkin121985.github.io/$SRA/history"
+          echo "Checking URL: $HISTORY_URL"
+          curl -I "$HISTORY_URL" || echo "URL is not accessible"
+
       - name: Try to download previous history
         run: |
-          HISTORY_URL="https://${{ github.repository_owner }}.github.io/${{ github.repository_name }}/history"
-          if curl --output /dev/null --silent --head --fail "$HISTORY_URL"; then
-            echo "Downloading history from $HISTORY_URL"
-            mkdir -p allure-history/history
-            curl -L "$HISTORY_URL/history-trend.json" -o allure-history/history/history-trend.json || true
-            curl -L "$HISTORY_URL/categories-trend.json" -o allure-history/history/categories-trend.json || true
-            curl -L "$HISTORY_URL/duration-trend.json" -o allure-history/history/duration-trend.json || true
-            curl -L "$HISTORY_URL/retry-trend.json" -o allure-history/history/retry-trend.json || true
-          else
-            echo "No history found at $HISTORY_URL"
-          fi
-
-      - name: Verify downloaded history
-        run: |
-          if [ ! -f allure-history/history/history-trend.json ]; then
-            echo "History-trend.json not found"; exit 1;
-          fi
+          HISTORY_URL="https://$VadimShishkin121985.github.io/$SRA/history"
+          echo "Downloading from $HISTORY_URL"
+          mkdir -p allure-history/history
+          curl -L "$HISTORY_URL/history-trend.json" -o allure-history/history/history-trend.json || echo "Failed to download history-trend.json"
+          curl -L "$HISTORY_URL/categories-trend.json" -o allure-history/history/categories-trend.json || echo "Failed to download categories-trend.json"
+          curl -L "$HISTORY_URL/duration-trend.json" -o allure-history/history/duration-trend.json || echo "Failed to download duration-trend.json"
+          curl -L "$HISTORY_URL/retry-trend.json" -o allure-history/history/retry-trend.json || echo "Failed to download retry-trend.json"
 
       - name: Store history
         uses: actions/upload-artifact@v3
@@ -113,7 +109,7 @@ jobs:
       - name: Include history in report
         run: |
           mkdir -p _site/history
-          cp -r allure-history/* _site/history/
+          cp -r allure-history/* _site/history/ || echo "No history to copy"
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
@@ -144,4 +140,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
-
