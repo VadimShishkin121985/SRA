@@ -22,17 +22,23 @@ jobs:
           echo "Created allure-history directory"
 
       - name: Try to download previous history
-        continue-on-error: true
         run: |
-          HISTORY_URL="https://github.com/${{ github.repository }}/gh-pages/history"
+          HISTORY_URL="https://${{ github.repository_owner }}.github.io/${{ github.repository_name }}/history"
           if curl --output /dev/null --silent --head --fail "$HISTORY_URL"; then
             echo "Downloading history from $HISTORY_URL"
+            mkdir -p allure-history/history
             curl -L "$HISTORY_URL/history-trend.json" -o allure-history/history/history-trend.json || true
             curl -L "$HISTORY_URL/categories-trend.json" -o allure-history/history/categories-trend.json || true
             curl -L "$HISTORY_URL/duration-trend.json" -o allure-history/history/duration-trend.json || true
             curl -L "$HISTORY_URL/retry-trend.json" -o allure-history/history/retry-trend.json || true
           else
             echo "No history found at $HISTORY_URL"
+          fi
+
+      - name: Verify downloaded history
+        run: |
+          if [ ! -f allure-history/history/history-trend.json ]; then
+            echo "History-trend.json not found"; exit 1;
           fi
 
       - name: Store history
@@ -53,10 +59,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-          
+
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
-        
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -103,6 +109,11 @@ jobs:
       - name: Generate Report
         run: |
           allure generate allure-results -o _site --clean
+
+      - name: Include history in report
+        run: |
+          mkdir -p _site/history
+          cp -r allure-history/* _site/history/
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
