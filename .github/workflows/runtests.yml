@@ -23,13 +23,13 @@ jobs:
 
       - name: Debug history URL
         run: |
-          HISTORY_URL="https://$VadimShishkin121985.github.io/$SRA/history"
+          HISTORY_URL="https://$https://$VadimShishkin121985.github.io/$SRA/history/history"
           echo "Checking URL: $HISTORY_URL"
           curl -I "$HISTORY_URL" || echo "URL is not accessible"
 
       - name: Try to download previous history
         run: |
-          HISTORY_URL="https://$VadimShishkin121985.github.io/$SRA/history"
+          HISTORY_URL="https://$https://$VadimShishkin121985.github.io/$SRA/history/history"
           echo "Downloading from $HISTORY_URL"
           mkdir -p allure-history/history
           curl -L "$HISTORY_URL/history-trend.json" -o allure-history/history/history-trend.json || echo "Failed to download history-trend.json"
