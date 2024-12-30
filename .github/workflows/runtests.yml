@@ -127,3 +127,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
+
+      - name: Display Report URLs
+        run: |
+          echo "📊 Allure Report URLs:"
+          echo "🔗 Latest Report: ${{ steps.deployment.outputs.page_url }}"
+          echo "🔗 This Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "🔗 All Reports: https://github.com/${{ github.repository }}/actions/workflows/runtests.yml"
+
+      - name: Create Report Summary
+        run: |
+          echo "### Test Report Links 📊" >> $GITHUB_STEP_SUMMARY
+          echo "* [Latest Report](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
+          echo "* [This Run Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "* [All Reports](https://github.com/${{ github.repository }}/actions/workflows/runtests.yml)" >> $GITHUB_STEP_SUMMARY
+
