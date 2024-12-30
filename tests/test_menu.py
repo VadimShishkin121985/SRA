@@ -14,26 +14,24 @@ from pages.menu_pages.menu_services import MenuServices
 from pages.menu_pages.menu_tools import MenuTools
 
 
-@allure.epic("SeaRates Tests")
-@allure.feature("Menu Navigation")
+
 class Test:
     def setup_method(self):
         self.driver: WebDriver = self.driver
         self.page_menu_tools = MenuTools(self.driver).open()
         self.main_page = MainPage(self.driver).open
 
-    @allure.story("Quick Actions")
-    @allure.title("Quick request button works")
+
     def test_quick_request_button(self):
         self.main_page.request_qute()
 
-    @allure.story("Tools Menu")
+
     class TestToolsMenu:
-        @allure.title("User can open Logistic Explorer")
+
         def test_menu_tools_le(self):
             self.page_menu_tools.go_to_logistic_explorer_page()
 
-        @allure.title("User can open Container Tracking")
+
         def test_menu_tools_ct(self):
             self.page_menu_tools.go_to_container_tracking_page()
             #self.page_menu_tools.go_to_air_tracking_page()
