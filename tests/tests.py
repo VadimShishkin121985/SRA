@@ -1,8 +1,9 @@
-
 import pytest
+import allure
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+from tests.conftest import take_screenshot
 
 from pages.app_pages.container_tracking_page import ContainerTracking
 from pages.main_page import MainPage
@@ -17,15 +18,26 @@ class Tests:
         self.page_main = MainPage(self.driver).open
         #self.service = self._get_gmail_service()
 
+    @allure.step("Performing login")
     def test_login(self):
         try:
             self.driver.find_element(By.XPATH, '//a[@class="navbar__link navbar__link_signIn | js-nav-item"]')
             self.page_sign_in = SignIn(self.driver)
+            
+            # Делаем скриншот перед входом
+            take_screenshot(self.driver, "Before Login")
+            
             self.page_main.go_to_sign_in_page()
             self.page_sign_in.sign_in()
+            
+            # Делаем скриншот после успешного входа
+            take_screenshot(self.driver, "After Login")
+            
             self.page_main.verify_login()
         except NoSuchElementException:
-            pass
+            # Делаем скриншот при ошибке
+            take_screenshot(self.driver, "Login Error")
+            raise
 
     def test_tracking_from_main_page(self):
         self.test_login()
