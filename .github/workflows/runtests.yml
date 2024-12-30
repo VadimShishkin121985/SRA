@@ -10,48 +10,35 @@ permissions:
 
 jobs:
   download-history:
-    # if: false
     runs-on: ubuntu-latest
-    name: Download history
+    continue-on-error: true
     steps:
-      - name: setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - run: >
-          ARTIFACT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=allure-results" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
-          &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip 
-          -o artifacts.zip &&
-          REPORT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts?name=github-pages" 
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);") 
-          &&
-          curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip 
-          -o pages.zip
-      - run: mkdir allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
-      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
-      - name: Store allure history
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+
+      - name: Create history directory
+        run: |
+          mkdir -p allure-history/history
+          echo "Created allure-history directory"
+
+      - name: Try to download previous history
+        continue-on-error: true
+        run: |
+          HISTORY_URL="https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/history"
+          if curl --output /dev/null --silent --head --fail "$HISTORY_URL/history-trend.json"; then
+            echo "Downloading history from $HISTORY_URL"
+            for file in history-trend.json categories-trend.json duration-trend.json retry-trend.json; do
+              wget -P allure-history/history "$HISTORY_URL/$file" || true
+            done
+          else
+            echo "No history found at $HISTORY_URL"
+          fi
+
+      - name: Store history
         uses: actions/upload-artifact@v3
         with:
-          name: allure-results
-          path:
-            allure-results
+          name: allure-history
+          path: allure-history
           retention-days: 1
 
   test:
@@ -65,10 +52,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
+          
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
-
+        
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -95,21 +82,51 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     name: Generate report
+    outputs:
+      timestamp: ${{ steps.generate_report.outputs.timestamp }}
     steps:
       - uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
+          distribution: 'microsoft'
           java-version: '17'
-      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
-      - name: Download all workflow run artifacts
+
+      - run: |
+          sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz
+          sudo tar -zxvf allure-2.23.1.tgz -C /opt/
+          sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
+      - name: Download test results
         uses: actions/download-artifact@v3
-      - run: allure generate -c allure-results -o _site
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Download history
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-history
+          path: allure-results
+        continue-on-error: true
+
+      - name: Generate Report
+        id: generate_report
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          cp -r allure-results/history/* allure-results/ || true
+          allure generate allure-results -o _site --clean
+          
+          mkdir -p _site/runs/$TIMESTAMP
+          cp -r _site/* _site/runs/$TIMESTAMP/ || true
+          
+          cp -r allure-results/history _site/history || true
+
       - name: Store generated report
         uses: actions/upload-artifact@v3
         with:
           name: _site
-          path:
-            _site
+          path: _site
           retention-days: 1
 
   publish-report:
@@ -120,10 +137,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download all workflow run artifacts
+      - name: Download artifact
         uses: actions/download-artifact@v3
+        with:
+          name: _site
+          path: _site
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2
+        with:
+          path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
@@ -132,13 +156,13 @@ jobs:
         run: |
           echo "📊 Allure Report URLs:"
           echo "🔗 Latest Report: ${{ steps.deployment.outputs.page_url }}"
-          echo "🔗 This Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "🔗 This Run: ${{ steps.deployment.outputs.page_url }}runs/${{ needs.generate-report.outputs.timestamp }}"
           echo "🔗 All Reports: https://github.com/${{ github.repository }}/actions/workflows/runtests.yml"
 
       - name: Create Report Summary
         run: |
           echo "### Test Report Links 📊" >> $GITHUB_STEP_SUMMARY
           echo "* [Latest Report](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
-          echo "* [This Run Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "* [This Run Report](${{ steps.deployment.outputs.page_url }}runs/${{ needs.generate-report.outputs.timestamp }})" >> $GITHUB_STEP_SUMMARY
           echo "* [All Reports](https://github.com/${{ github.repository }}/actions/workflows/runtests.yml)" >> $GITHUB_STEP_SUMMARY
 
