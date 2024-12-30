@@ -183,19 +183,6 @@ jobs:
           printf "Skipped [%${skipped_width}s%$((total_width-skipped_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $skipped_width))" "" $(($SKIPPED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-          # Добавляем временную диаграмму
-          echo "### Test Duration Distribution" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "Duration per test (seconds):" >> $GITHUB_STEP_SUMMARY
-          for file in allure-results/*.json; do
-            if [[ $file != *"trend.json" ]]; then
-              name=$(grep '"name":' "$file" | head -1 | cut -d'"' -f4)
-              duration=$(grep '"duration":' "$file" | head -1 | awk '{print $2/1000}')
-              printf "%-30s %8.2f |%s\n" "$name" "$duration" "$(printf '#%.0s' $(seq 1 $(echo "$duration/0.5" | bc)))" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
           # Убираем круговую диаграмму ASCII и сразу переходим к тренду выполнения
           echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
