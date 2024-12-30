@@ -144,50 +144,17 @@ jobs:
           # Подсчет процента успешных тестов
           PASS_RATE=$(awk "BEGIN { print ($PASSED/$TOTAL) * 100 }")
           
-          echo "### Overall Results" >> $GITHUB_STEP_SUMMARY
-          echo "- Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
-          echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
-          echo "- ⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
-          echo "- 📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
-          
-          echo "### Test Suites" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          find allure-results -name "*.json" ! -name 'history-trend.json' ! -name 'categories-trend.json' ! -name 'duration-trend.json' ! -name 'retry-trend.json' -exec grep -l '"name":' {} \; | sort | while read -r file; do
-            suite_name=$(grep '"name":' "$file" | head -1 | cut -d'"' -f4)
-            status=$(grep '"status":' "$file" | head -1 | cut -d'"' -f4)
-            case $status in
-              "passed") icon="✅";;
-              "failed") icon="❌";;
-              "skipped") icon="⏭️";;
-              *) icon="❓";;
-            esac
-            echo "$icon $suite_name" >> $GITHUB_STEP_SUMMARY
-          done
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
-          echo "### Duration" >> $GITHUB_STEP_SUMMARY
-          total_duration=$(grep -h '"duration":' allure-results/*.json | awk '{sum += $2} END {print sum/1000}')
-          echo "⏱️ Total execution time: ${total_duration}s" >> $GITHUB_STEP_SUMMARY
-
-          # Добавляем визуальный прогресс-бар
-          total_width=50
-          passed_width=$(( ($PASSED * $total_width) / $TOTAL ))
-          failed_width=$(( ($FAILED * $total_width) / $TOTAL ))
-          skipped_width=$(( ($SKIPPED * $total_width) / $TOTAL ))
-          
-          echo "### Test Results Distribution" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          printf "Passed  [%${passed_width}s%$((total_width-passed_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $passed_width))" "" $(($PASSED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
-          printf "Failed  [%${failed_width}s%$((total_width-failed_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $failed_width))" "" $(($FAILED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
-          printf "Skipped [%${skipped_width}s%$((total_width-skipped_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $skipped_width))" "" $(($SKIPPED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
-          # Убираем круговую диаграмму ASCII и сразу переходим к тренду выполнения
           echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "Last 5 runs:" >> $GITHUB_STEP_SUMMARY
-          echo "Today     $(printf '#%.0s' $(seq 1 $PASSED))$(printf 'x%.0s' $(seq 1 $FAILED)) $TOTAL tests" >> $GITHUB_STEP_SUMMARY
+          echo "Current Run Statistics:" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
+          echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Last run:" >> $GITHUB_STEP_SUMMARY
+          echo "$(printf '#%.0s' $(seq 1 $PASSED))$(printf 'x%.0s' $(seq 1 $FAILED)) $TOTAL tests" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
           # Добавляем метрики производительности
