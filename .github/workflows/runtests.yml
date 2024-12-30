@@ -103,14 +103,64 @@ jobs:
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
-      - run: allure generate -c allure-results -o _site
+      - name: Generate Report
+        run: |
+          cp -r allure-results/history/* allure-results/ || true
+          allure generate allure-results -o _site --clean
+          cp -r allure-results/history _site/history || true
+
+      - name: Generate Test Summary
+        run: |
+          echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
+          
+          # Подсчет общего количества тестов
+          TOTAL=$(find allure-results -name "*.json" ! -name 'history-trend.json' ! -name 'categories-trend.json' ! -name 'duration-trend.json' ! -name 'retry-trend.json' | wc -l)
+          
+          # Подсчет успешных тестов
+          PASSED=$(grep -l '"status":"passed"' allure-results/*.json | wc -l)
+          
+          # Подсчет упавших тестов
+          FAILED=$(grep -l '"status":"failed"' allure-results/*.json | wc -l)
+          
+          # Подсчет пропущенных тестов
+          SKIPPED=$(grep -l '"status":"skipped"' allure-results/*.json | wc -l)
+          
+          # Подсчет процента успешных тестов
+          PASS_RATE=$(awk "BEGIN { print ($PASSED/$TOTAL) * 100 }")
+          
+          echo "### Overall Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "- ⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
+          echo "- 📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Test Suites" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          find allure-results -name "*.json" ! -name 'history-trend.json' ! -name 'categories-trend.json' ! -name 'duration-trend.json' ! -name 'retry-trend.json' -exec grep -l '"name":' {} \; | sort | while read -r file; do
+            suite_name=$(grep '"name":' "$file" | head -1 | cut -d'"' -f4)
+            status=$(grep '"status":' "$file" | head -1 | cut -d'"' -f4)
+            case $status in
+              "passed") icon="✅";;
+              "failed") icon="❌";;
+              "skipped") icon="⏭️";;
+              *) icon="❓";;
+            esac
+            echo "$icon $suite_name" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Duration" >> $GITHUB_STEP_SUMMARY
+          total_duration=$(grep -h '"duration":' allure-results/*.json | awk '{sum += $2} END {print sum/1000}')
+          echo "⏱️ Total execution time: ${total_duration}s" >> $GITHUB_STEP_SUMMARY
+
       - name: Store generated report
         uses: actions/upload-artifact@v3
         with:
           name: _site
-          path:
-            _site
-          retention-days: 5
+          path: _site
+          retention-days: 1
 
   publish-report:
     runs-on: ubuntu-latest
