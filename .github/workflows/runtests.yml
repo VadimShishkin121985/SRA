@@ -155,6 +155,60 @@ jobs:
           total_duration=$(grep -h '"duration":' allure-results/*.json | awk '{sum += $2} END {print sum/1000}')
           echo "⏱️ Total execution time: ${total_duration}s" >> $GITHUB_STEP_SUMMARY
 
+          # Добавляем визуальный прогресс-бар
+          total_width=50
+          passed_width=$(( ($PASSED * $total_width) / $TOTAL ))
+          failed_width=$(( ($FAILED * $total_width) / $TOTAL ))
+          skipped_width=$(( ($SKIPPED * $total_width) / $TOTAL ))
+          
+          echo "### Test Results Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          printf "Passed  [%${passed_width}s%$((total_width-passed_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $passed_width))" "" $(($PASSED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
+          printf "Failed  [%${failed_width}s%$((total_width-failed_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $failed_width))" "" $(($FAILED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
+          printf "Skipped [%${skipped_width}s%$((total_width-skipped_width))s] %d%%\n" "$(printf '#%.0s' $(seq 1 $skipped_width))" "" $(($SKIPPED * 100 / $TOTAL)) >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+          # Добавляем временную диаграмму
+          echo "### Test Duration Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "Duration per test (seconds):" >> $GITHUB_STEP_SUMMARY
+          for file in allure-results/*.json; do
+            if [[ $file != *"trend.json" ]]; then
+              name=$(grep '"name":' "$file" | head -1 | cut -d'"' -f4)
+              duration=$(grep '"duration":' "$file" | head -1 | awk '{print $2/1000}')
+              printf "%-30s %8.2f |%s\n" "$name" "$duration" "$(printf '#%.0s' $(seq 1 $(echo "$duration/0.5" | bc)))" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+          # Добавляем круговую диаграмму ASCII
+          echo "### Test Results Pie Chart" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "     .------------------." >> $GITHUB_STEP_SUMMARY
+          echo "    /  Passed ($PASSED)     \\" >> $GITHUB_STEP_SUMMARY
+          echo "   /       ########         \\" >> $GITHUB_STEP_SUMMARY
+          echo "  |      ##########         |" >> $GITHUB_STEP_SUMMARY
+          echo "  |    ############     ($FAILED) Failed" >> $GITHUB_STEP_SUMMARY
+          echo "  |  ##############         |" >> $GITHUB_STEP_SUMMARY
+          echo "   \\     ########     ($SKIPPED) /" >> $GITHUB_STEP_SUMMARY
+          echo "    \\     Skipped        /" >> $GITHUB_STEP_SUMMARY
+          echo "     '------------------'" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+          # Добавляем тренд выполнения
+          echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "Last 5 runs:" >> $GITHUB_STEP_SUMMARY
+          echo "Today     $(printf '#%.0s' $(seq 1 $PASSED))$(printf 'x%.0s' $(seq 1 $FAILED)) $TOTAL tests" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+          # Добавляем метрики производительности
+          echo "### Performance Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "Average test duration: $(echo "scale=2; $total_duration/$TOTAL" | bc) seconds" >> $GITHUB_STEP_SUMMARY
+          echo "Total suite duration: ${total_duration} seconds" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
       - name: Store generated report
         uses: actions/upload-artifact@v3
         with:
