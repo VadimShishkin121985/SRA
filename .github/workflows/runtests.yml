@@ -129,17 +129,34 @@ jobs:
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
           
-          # Подсчет тестов текущего прогона
-          TOTAL=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' | wc -l)
+          # Устанавливаем jq для работы с JSON
+          sudo apt-get install -y jq
           
-          # Подсчет успешных тестов
-          PASSED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"passed"' {} \; | wc -l)
+          # Подсчет результатов тестов
+          TOTAL=0
+          PASSED=0
+          FAILED=0
+          SKIPPED=0
           
-          # Подсчет упавших тестов
-          FAILED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"failed"' {} \; | wc -l)
-          
-          # Подсчет пропущенных тестов
-          SKIPPED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"skipped"' {} \; | wc -l)
+          for file in allure-results/test-cases/*.json; do
+            if [ -f "$file" ]; then
+              status=$(jq -r '.status' "$file")
+              case $status in
+                "passed")
+                  PASSED=$((PASSED + 1))
+                  TOTAL=$((TOTAL + 1))
+                  ;;
+                "failed")
+                  FAILED=$((FAILED + 1))
+                  TOTAL=$((TOTAL + 1))
+                  ;;
+                "skipped")
+                  SKIPPED=$((SKIPPED + 1))
+                  TOTAL=$((TOTAL + 1))
+                  ;;
+              esac
+            fi
+          done
           
           # Подсчет процента успешных тестов
           if [ $TOTAL -gt 0 ]; then
