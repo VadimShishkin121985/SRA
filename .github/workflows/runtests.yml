@@ -132,29 +132,39 @@ jobs:
           # Устанавливаем jq для работы с JSON
           sudo apt-get install -y jq
           
+          # Отладочная информация
+          echo "Contents of allure-results directory:"
+          ls -R allure-results/
+          
           # Подсчет результатов тестов
           TOTAL=0
           PASSED=0
           FAILED=0
           SKIPPED=0
           
-          for file in allure-results/test-cases/*.json; do
-            if [ -f "$file" ]; then
-              status=$(jq -r '.status' "$file")
-              case $status in
-                "passed")
-                  PASSED=$((PASSED + 1))
-                  TOTAL=$((TOTAL + 1))
-                  ;;
-                "failed")
-                  FAILED=$((FAILED + 1))
-                  TOTAL=$((TOTAL + 1))
-                  ;;
-                "skipped")
-                  SKIPPED=$((SKIPPED + 1))
-                  TOTAL=$((TOTAL + 1))
-                  ;;
-              esac
+          # Ищем все JSON файлы с результатами тестов
+          for file in allure-results/*.json; do
+            if [[ -f "$file" && ! "$file" =~ (trend|container|categories|retry) ]]; then
+              echo "Processing file: $file"
+              if status=$(jq -r '.status' "$file" 2>/dev/null); then
+                case $status in
+                  "passed")
+                    PASSED=$((PASSED + 1))
+                    TOTAL=$((TOTAL + 1))
+                    echo "Found passed test"
+                    ;;
+                  "failed"|"broken")
+                    FAILED=$((FAILED + 1))
+                    TOTAL=$((TOTAL + 1))
+                    echo "Found failed test"
+                    ;;
+                  "skipped")
+                    SKIPPED=$((SKIPPED + 1))
+                    TOTAL=$((TOTAL + 1))
+                    echo "Found skipped test"
+                    ;;
+                esac
+              fi
             fi
           done
           
