@@ -95,14 +95,8 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
-        id: pytest
         run: |
-          # Сохраняем вывод pytest в файл для последующего анализа
-          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results | tee pytest-output.txt
-          echo "total=$(grep -c "::test_" pytest-output.txt)" >> $GITHUB_OUTPUT
-          echo "passed=$(grep -c "::test_.* PASSED" pytest-output.txt)" >> $GITHUB_OUTPUT
-          echo "failed=$(grep -c "::test_.* FAILED\|ERROR" pytest-output.txt)" >> $GITHUB_OUTPUT
-          echo "skipped=$(grep -c "::test_.* SKIPPED" pytest-output.txt)" >> $GITHUB_OUTPUT
+          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml
         continue-on-error: true
 
       - name: Store allure results
@@ -135,11 +129,15 @@ jobs:
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
           
-          # Используем значения из предыдущего шага
-          TOTAL=${{ steps.pytest.outputs.total }}
-          PASSED=${{ steps.pytest.outputs.passed }}
-          FAILED=${{ steps.pytest.outputs.failed }}
-          SKIPPED=${{ steps.pytest.outputs.skipped }}
+          # Подсчет результатов из junit-отчета pytest
+          TOTAL=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase)" {} \; 2>/dev/null)
+          FAILED=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[failure])" {} \; 2>/dev/null)
+          ERROR=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[error])" {} \; 2>/dev/null)
+          SKIPPED=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[skipped])" {} \; 2>/dev/null)
+          
+          # Вычисляем количество успешных тестов
+          FAILED=$((FAILED + ERROR))
+          PASSED=$((TOTAL - FAILED - SKIPPED))
           
           # Подсчет процента успешных тестов
           if [ $TOTAL -gt 0 ]; then
