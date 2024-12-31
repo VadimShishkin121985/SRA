@@ -129,20 +129,24 @@ jobs:
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
           
-          # Подсчет общего количества тестов
-          TOTAL=$(find allure-results -name "*.json" ! -name 'history-trend.json' ! -name 'categories-trend.json' ! -name 'duration-trend.json' ! -name 'retry-trend.json' | wc -l)
+          # Подсчет тестов текущего прогона
+          TOTAL=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' | wc -l)
           
           # Подсчет успешных тестов
-          PASSED=$(grep -l '"status":"passed"' allure-results/*.json | wc -l)
+          PASSED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"passed"' {} \; | wc -l)
           
           # Подсчет упавших тестов
-          FAILED=$(grep -l '"status":"failed"' allure-results/*.json | wc -l)
+          FAILED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"failed"' {} \; | wc -l)
           
           # Подсчет пропущенных тестов
-          SKIPPED=$(grep -l '"status":"skipped"' allure-results/*.json | wc -l)
+          SKIPPED=$(find allure-results -name "*.json" ! -name '*-trend.json' ! -name '*-container.json' -exec grep -l '"status":"skipped"' {} \; | wc -l)
           
           # Подсчет процента успешных тестов
-          PASS_RATE=$(awk "BEGIN { print ($PASSED/$TOTAL) * 100 }")
+          if [ $TOTAL -gt 0 ]; then
+            PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
+          else
+            PASS_RATE=0
+          fi
           
           echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
@@ -153,8 +157,8 @@ jobs:
           echo "⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Last run:" >> $GITHUB_STEP_SUMMARY
-          echo "$(printf '#%.0s' $(seq 1 $PASSED))$(printf 'x%.0s' $(seq 1 $FAILED)) $TOTAL tests" >> $GITHUB_STEP_SUMMARY
+          echo "Results visualization:" >> $GITHUB_STEP_SUMMARY
+          echo "$(printf '#%.0s' $(seq 1 $PASSED))$(printf 'x%.0s' $(seq 1 $FAILED))" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
           # Добавляем метрики производительности
