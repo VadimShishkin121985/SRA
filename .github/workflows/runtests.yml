@@ -126,14 +126,31 @@ jobs:
 
       - name: Generate Test Summary
         run: |
+          # Установка xmllint
+          sudo apt-get update && sudo apt-get install -y libxml2-utils
+          
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
           
+          # Проверяем наличие XML файла
+          echo "Checking for junit.xml file:"
+          ls -l allure-results/junit.xml
+          
+          # Выводим содержимое XML для отладки
+          echo "Content of junit.xml:"
+          cat allure-results/junit.xml
+          
           # Подсчет результатов из junit-отчета pytest
-          TOTAL=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase)" {} \; 2>/dev/null)
-          FAILED=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[failure])" {} \; 2>/dev/null)
-          ERROR=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[error])" {} \; 2>/dev/null)
-          SKIPPED=$(find allure-results -name "*.xml" -exec xmllint --xpath "count(//testcase[skipped])" {} \; 2>/dev/null)
+          TOTAL=$(xmllint --xpath "count(//testcase)" allure-results/junit.xml)
+          FAILED=$(xmllint --xpath "count(//testcase[failure])" allure-results/junit.xml || echo "0")
+          ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml || echo "0")
+          SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" allure-results/junit.xml || echo "0")
+          
+          echo "Raw counts:"
+          echo "TOTAL: $TOTAL"
+          echo "FAILED: $FAILED"
+          echo "ERROR: $ERROR"
+          echo "SKIPPED: $SKIPPED"
           
           # Вычисляем количество успешных тестов
           FAILED=$((FAILED + ERROR))

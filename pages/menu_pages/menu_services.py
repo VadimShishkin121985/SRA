@@ -39,7 +39,8 @@ class MenuServices(BasePage):
         self.reefer_cargoes_cervices_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Reefer cargoes"]')
         self.warehousing_services_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Warehousing"]')
         self.customs_clearance_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Customs clearance"]')
-
+        self.abandoned_cargoes_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Abandoned cargoes"]')
+        self.teen_foot_containers_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="10-foot containers"]')
 
     def move_mouse_to_services(self):
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="services"]')
@@ -109,6 +110,11 @@ class MenuServices(BasePage):
         self.driver.find_element(*self.inspection_services_locator).click()
         self.waiter_with_assert('.services-box')
 
+    def go_to_abandoned_cargoes_page(self):
+        self.move_mouse_to_services()
+        self.driver.find_element(*self.abandoned_cargoes_locator).click()
+        self.waiter_with_assert('.section__hero__info')
+
     def go_to_certification_services_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.certification_service_locator).click()
@@ -143,3 +149,8 @@ class MenuServices(BasePage):
         self.move_mouse_to_services()
         self.driver.find_element(*self.warehousing_services_locator).click()
         self.waiter_with_assert('.images')
+
+    def go_to_test_10_foot_containers_page(self):
+        self.move_mouse_to_services()
+        self.driver.find_element(*self.teen_foot_containers_locator).click()
+        self.waiter_with_assert('.wrapper')

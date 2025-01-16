@@ -27,6 +27,7 @@ class MenuFooter:
         self.footer_tools_rt_locator = (By.XPATH, '//a[text()="Route Planner"]')
         self.footer_tools_sd_locator = (By.XPATH, '//a[text()="Smart Documents"]')
         self.footer_tools_dp_locator = (By.XPATH, '//a[text()="Developer Portal"]')
+        self.footer_tools_co2_locator = (By.XPATH, '//a[normalize-space()="CO2 Calculator"]')
         self.footer_tools_request_it_locator = (By.XPATH, '//a[text()="Request an IT tool"]')
         self.footer_opportunities_for_shipper_locator = (By.XPATH, '//a[text()="For Shippers"]')
         self.footer_opportunities_for_carriers_locator = (By.XPATH, '//a[text()="For Carriers"]')
@@ -43,8 +44,12 @@ class MenuFooter:
         self.footer_terms_locator = (By.XPATH, '//a[text()="Terms of service"]')
         self.footer_privacy_policy_locator = (By.XPATH, '//a[text()="Privacy Policy"]')
         self.footer_documents_templates_locator = (By.XPATH, '//a[text()="Documents templates"]')
+        self.footer_freight_index_locator = (By.XPATH, '//a[normalize-space()="Freight Index"]')
+        self.footer_find_a_tool_locator = (By.XPATH, '//a[@class="footer__item"][normalize-space()="Find a tool"]')
+        self.footer_affiliates_locator = (By.XPATH, '//a[normalize-space()="Affiliates"]')
 
     def move_mouse_to_footer(self):
+        time.sleep(3)
         menu_tools = self.driver.find_element(By.XPATH, '//footer[@class="footer"]')
         actions = ActionChains(self.driver)
         actions.move_to_element(menu_tools).perform()
@@ -213,4 +218,23 @@ class MenuFooter:
         self.waiter_with_assert('.document-download-btn')
         self.driver.back()
 
+    def go_to_co2_calculator_from_footer(self):
+        self.move_mouse_to_footer()
+        self.driver.find_element(*self.footer_tools_co2_locator).click()
+        self.waiter_with_assert('#carbon-emissions-calculator-root')
+
+    def go_to_freight_index_from_footer(self):
+        self.move_mouse_to_footer()
+        self.driver.find_element(*self.footer_freight_index_locator).click()
+        self.waiter_with_assert('.bHkzLO')
+
+    def go_to_find_a_tool_from_footer(self):
+        self.move_mouse_to_footer()
+        self.driver.find_element(*self.footer_find_a_tool_locator).click()
+        self.waiter_with_assert('.tool-box')
+
+    def go_to_affiliates_from_page(self):
+        self.move_mouse_to_footer()
+        self.driver.find_element(*self.footer_affiliates_locator).click()
+        self.waiter_with_assert('.btn-box')
 
