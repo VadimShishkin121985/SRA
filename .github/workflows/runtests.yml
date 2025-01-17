@@ -95,9 +95,12 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
+        id: run_tests
         run: |
-          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml
-        continue-on-error: true
+          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
+          echo "failed_tests<<EOF" >> $GITHUB_OUTPUT
+          pytest --maxfail=3 --disable-warnings -v --collect-only | grep "FAILED" | sed 's/^/• /' >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Store allure results
         uses: actions/upload-artifact@v3
@@ -166,14 +169,11 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-          # Добавляем список упавших тестов
+          # Добавляем список упавших тестов из job test
           if [ $FAILED -gt 0 ]; then
             echo "### ❌ Failed Tests:" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            grep -l '"status":"failed\|broken"' allure-results/*-result.json | \
-              xargs -I {} grep -h '"name":' {} | \
-              cut -d'"' -f4 | \
-              sed 's/^/• /' >> $GITHUB_STEP_SUMMARY
+            echo "${{ needs.test.outputs.failed_tests }}" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
 
