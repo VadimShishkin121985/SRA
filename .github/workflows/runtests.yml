@@ -119,7 +119,7 @@ jobs:
         run: |
           TOTAL=$(xmllint --xpath "count(//testcase)" allure-results/junit.xml)
           FAILED=$(xmllint --xpath "count(//testcase[failure])" allure-results/junit.xml || echo "0")
-          ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml || echo "0")
+          ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml 2>/dev/null || echo "0")
           SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" allure-results/junit.xml || echo "0")
           PASSED=$((TOTAL - FAILED - ERROR - SKIPPED))
           PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
