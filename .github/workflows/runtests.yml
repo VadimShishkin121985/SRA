@@ -165,7 +165,18 @@ jobs:
           echo "⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          
+
+          # Добавляем список упавших тестов
+          if [ $FAILED -gt 0 ]; then
+            echo "### ❌ Failed Tests:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            grep -l '"status":"failed\|broken"' allure-results/*-result.json | \
+              xargs -I {} grep -h '"name":' {} | \
+              cut -d'"' -f4 | \
+              sed 's/^/• /' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
           # Формируем сообщение для Telegram
           MESSAGE="📊 *Test Report Summary:*
 
