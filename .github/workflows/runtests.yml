@@ -172,12 +172,12 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           
-          # Формируем сообщение для Telegram
-          MESSAGE="📊 *Test Report Summary*:\n\n\
-          Total Tests: $TOTAL\n\
-          ✅ Passed: $PASSED\n\
-          ❌ Failed: $FAILED\n\
-          ⏭️ Skipped: $SKIPPED\n\
+          MESSAGE="📊 *Test Report Summary:*
+
+          Total Tests: $TOTAL
+          ✅ Passed: $PASSED
+          ❌ Failed: $FAILED
+          ⏭️ Skipped: $SKIPPED
           📈 Pass Rate: ${PASS_RATE}%"
 
           # Отправляем сообщение в Telegram
