@@ -113,16 +113,20 @@ jobs:
     steps:
       - uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
+          distribution: 'microsoft'
           java-version: '17'
+
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
+
       - name: Generate Report
         run: |
           cp -r allure-results/history/* allure-results/ || true
           allure generate allure-results -o _site --clean
           cp -r allure-results/history _site/history || true
+
       - name: Generate Test Summary
         run: |
           # Установка xmllint
@@ -135,21 +139,11 @@ jobs:
           echo "Checking for junit.xml file:"
           ls -l allure-results/junit.xml
 
-          # Выводим содержимое XML для отладки
-          echo "Content of junit.xml:"
-          cat allure-results/junit.xml
-
           # Подсчет результатов из junit-отчета pytest
           TOTAL=$(xmllint --xpath "count(//testcase)" allure-results/junit.xml)
           FAILED=$(xmllint --xpath "count(//testcase[failure])" allure-results/junit.xml || echo "0")
           ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml || echo "0")
           SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" allure-results/junit.xml || echo "0")
-
-          echo "Raw counts:"
-          echo "TOTAL: $TOTAL"
-          echo "FAILED: $FAILED"
-          echo "ERROR: $ERROR"
-          echo "SKIPPED: $SKIPPED"
 
           # Вычисляем количество успешных тестов
           FAILED=$((FAILED + ERROR))
@@ -172,6 +166,7 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           
+          # Формируем сообщение для Telegram
           MESSAGE="📊 *Test Report Summary:*
 
           Total Tests: $TOTAL
@@ -182,11 +177,12 @@ jobs:
 
           🔗 [View Run Details](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
 
+          # Отправляем сообщение в Telegram
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
             -d text="$MESSAGE" \
             -d parse_mode="Markdown"
-          
+        env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
 
