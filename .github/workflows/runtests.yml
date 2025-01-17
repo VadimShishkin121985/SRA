@@ -99,12 +99,7 @@ jobs:
         run: |
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
           echo "failed_tests<<EOF" >> $GITHUB_OUTPUT
-          # Получаем список упавших тестов из junit.xml
-          failed_list=$(xmllint --xpath "//testcase[failure or error]/@name" allure-results/junit.xml 2>/dev/null | sed -E 's/name="([^"]+)"/• \1\n/g')
-          if [ ! -z "$failed_list" ]; then
-            echo "$failed_list" >> $GITHUB_OUTPUT
-          fi
-          echo "EOF" >> $GITHUB_OUTPUT
+
 
       - name: Store allure results
         uses: actions/upload-artifact@v3
@@ -173,11 +168,13 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-          # Добавляем список упавших тестов из job test
+          # Добавляем список упавших тестов из junit.xml
           if [ $FAILED -gt 0 ]; then
             echo "### ❌ Failed Tests:" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            echo "${{ needs.test.outputs.failed_tests }}" >> $GITHUB_STEP_SUMMARY
+            # Получаем имена упавших тестов из того же файла junit.xml
+            xmllint --xpath "//testcase[failure or error]/@name" allure-results/junit.xml 2>/dev/null | \
+              sed -E 's/name="([^"]+)"/• \1/g' >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
 
