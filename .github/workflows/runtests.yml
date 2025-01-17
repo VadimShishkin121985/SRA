@@ -172,6 +172,15 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           
+          # Формируем сообщение для Telegram
+          MESSAGE="📊 *Test Report Summary*:\n\n\
+          Total Tests: $TOTAL\n\
+          ✅ Passed: $PASSED\n\
+          ❌ Failed: $FAILED\n\
+          ⏭️ Skipped: $SKIPPED\n\
+          📈 Pass Rate: ${PASS_RATE}%"
+
+          # Отправляем сообщение в Telegram
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
             -d text="$MESSAGE" \
