@@ -215,6 +215,9 @@ jobs:
               -d text="$SKIPPED_MSG" \
               -d parse_mode="Markdown"
           fi
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
