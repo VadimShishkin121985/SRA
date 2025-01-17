@@ -178,9 +178,8 @@ jobs:
           ✅ Passed: $PASSED
           ❌ Failed: $FAILED
           ⏭️ Skipped: $SKIPPED
-          📈 Pass Rate: ${PASS_RATE}%"
+          📈 Pass Rate: ${PASS_RATE}%
 
-          Pass Rate: ${PASS_RATE}%
           🔗 [View Run Details](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
 
           # Отправляем сообщение в Telegram
