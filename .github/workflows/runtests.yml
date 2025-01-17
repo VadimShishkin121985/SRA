@@ -99,7 +99,11 @@ jobs:
         run: |
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
           echo "failed_tests<<EOF" >> $GITHUB_OUTPUT
-          pytest --maxfail=3 --disable-warnings -v --collect-only | grep "FAILED" | sed 's/^/• /' >> $GITHUB_OUTPUT
+          # Получаем список упавших тестов из junit.xml
+          failed_list=$(xmllint --xpath "//testcase[failure or error]/@name" allure-results/junit.xml 2>/dev/null | sed -E 's/name="([^"]+)"/• \1\n/g')
+          if [ ! -z "$failed_list" ]; then
+            echo "$failed_list" >> $GITHUB_OUTPUT
+          fi
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Store allure results
