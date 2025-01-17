@@ -106,8 +106,8 @@ jobs:
           path: allure-results
           retention-days: 1
 
-
   generate-report:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -138,7 +138,6 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
-
 
   publish-report:
     runs-on: ubuntu-latest
