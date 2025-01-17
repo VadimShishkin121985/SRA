@@ -182,51 +182,39 @@ jobs:
 
           🔗 [View Run Details](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
 
-          # Собираем списки тестов по статусам
-          PASSED_TESTS=$(grep -l '"status":"passed"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
-          FAILED_TESTS=$(grep -l '"status":"failed\|broken"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
-          SKIPPED_TESTS=$(grep -l '"status":"skipped"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
-
-          # Формируем JSON для inline-кнопок
-          KEYBOARD='{
-            "inline_keyboard": [
-              [
-                {
-                  "text": "✅ Passed ($PASSED)",
-                  "callback_data": "passed_tests:$PASSED_TESTS"
-                }
-              ],
-              [
-                {
-                  "text": "❌ Failed ($FAILED)",
-                  "callback_data": "failed_tests:$FAILED_TESTS"
-                }
-              ],
-              [
-                {
-                  "text": "⏭️ Skipped ($SKIPPED)",
-                  "callback_data": "skipped_tests:$SKIPPED_TESTS"
-                }
-              ],
-              [
-                {
-                  "text": "📊 View Full Report",
-                  "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-                }
-              ]
-            ]
-          }'
-
-          # Отправляем сообщение в Telegram с кнопками
+          # Отправляем основное сообщение
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
             -d text="$MESSAGE" \
-            -d parse_mode="Markdown" \
-            -d reply_markup="$KEYBOARD"
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
+            -d parse_mode="Markdown"
 
+          # Собираем и отправляем списки тестов
+          if [ $PASSED -gt 0 ]; then
+            PASSED_LIST=$(grep -l '"status":"passed"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | sed 's/^/• /')
+            PASSED_MSG="✅ *Passed Tests:*\n$PASSED_LIST"
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+              -d text="$PASSED_MSG" \
+              -d parse_mode="Markdown"
+          fi
+
+          if [ $FAILED -gt 0 ]; then
+            FAILED_LIST=$(grep -l '"status":"failed\|broken"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | sed 's/^/• /')
+            FAILED_MSG="❌ *Failed Tests:*\n$FAILED_LIST"
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+              -d text="$FAILED_MSG" \
+              -d parse_mode="Markdown"
+          fi
+
+          if [ $SKIPPED -gt 0 ]; then
+            SKIPPED_LIST=$(grep -l '"status":"skipped"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | sed 's/^/• /')
+            SKIPPED_MSG="⏭️ *Skipped Tests:*\n$SKIPPED_LIST"
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+              -d text="$SKIPPED_MSG" \
+              -d parse_mode="Markdown"
+          fi
 
       - name: Store generated report
         uses: actions/upload-artifact@v3
