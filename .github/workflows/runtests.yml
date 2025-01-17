@@ -182,25 +182,30 @@ jobs:
 
           🔗 [View Run Details](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
 
+          # Собираем списки тестов по статусам
+          PASSED_TESTS=$(grep -l '"status":"passed"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
+          FAILED_TESTS=$(grep -l '"status":"failed\|broken"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
+          SKIPPED_TESTS=$(grep -l '"status":"skipped"' allure-results/*-result.json | xargs -I {} grep -h '"name":' {} | cut -d'"' -f4 | tr '\n' ',' | sed 's/,$//')
+
           # Формируем JSON для inline-кнопок
           KEYBOARD='{
             "inline_keyboard": [
               [
                 {
                   "text": "✅ Passed ($PASSED)",
-                  "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs/$GITHUB_JOB?report=passed"
+                  "callback_data": "passed_tests:$PASSED_TESTS"
                 }
               ],
               [
                 {
                   "text": "❌ Failed ($FAILED)",
-                  "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs/$GITHUB_JOB?report=failed"
+                  "callback_data": "failed_tests:$FAILED_TESTS"
                 }
               ],
               [
                 {
                   "text": "⏭️ Skipped ($SKIPPED)",
-                  "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs/$GITHUB_JOB?report=skipped"
+                  "callback_data": "skipped_tests:$SKIPPED_TESTS"
                 }
               ],
               [
