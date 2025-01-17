@@ -111,74 +111,44 @@ jobs:
     needs: test
     name: Generate report
     steps:
-      - uses: actions/setup-java@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
+          distribution: 'microsoft'
           java-version: '17'
-      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
-      - name: Generate Report
+
+      - name: Download and generate report
         run: |
+          sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz
+          sudo tar -zxvf allure-2.23.1.tgz -C /opt/
+          sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
           cp -r allure-results/history/* allure-results/ || true
           allure generate allure-results -o _site --clean
           cp -r allure-results/history _site/history || true
 
-      - name: Generate Test Summary
+      - name: Send report summary to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
         run: |
-          # Установка xmllint
-          sudo apt-get update && sudo apt-get install -y libxml2-utils
-          
-          echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
-          echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
-          
-          # Проверяем наличие XML файла
-          echo "Checking for junit.xml file:"
-          ls -l allure-results/junit.xml
-          
-          # Выводим содержимое XML для отладки
-          echo "Content of junit.xml:"
-          cat allure-results/junit.xml
-          
-          # Подсчет результатов из junit-отчета pytest
           TOTAL=$(xmllint --xpath "count(//testcase)" allure-results/junit.xml)
           FAILED=$(xmllint --xpath "count(//testcase[failure])" allure-results/junit.xml || echo "0")
           ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml || echo "0")
           SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" allure-results/junit.xml || echo "0")
+          PASSED=$((TOTAL - FAILED - ERROR - SKIPPED))
+          PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
           
-          echo "Raw counts:"
-          echo "TOTAL: $TOTAL"
-          echo "FAILED: $FAILED"
-          echo "ERROR: $ERROR"
-          echo "SKIPPED: $SKIPPED"
+          MESSAGE="📊 *Test Report Summary*:\n\n\
+          Total Tests: $TOTAL\n\
+          ✅ Passed: $PASSED\n\
+          ❌ Failed: $FAILED\n\
+          ⏭️ Skipped: $SKIPPED\n\
+          📈 Pass Rate: ${PASS_RATE}%"
           
-          # Вычисляем количество успешных тестов
-          FAILED=$((FAILED + ERROR))
-          PASSED=$((TOTAL - FAILED - SKIPPED))
-          
-          # Подсчет процента успешных тестов
-          if [ $TOTAL -gt 0 ]; then
-            PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
-          else
-            PASS_RATE=0
-          fi
-          
-          echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "Current Run Statistics:" >> $GITHUB_STEP_SUMMARY
-          echo "📊 Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
-          echo "❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
-          echo "⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
-          echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
-      - name: Store generated report
-        uses: actions/upload-artifact@v3
-        with:
-          name: _site
-          path: _site
-          retention-days: 1
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+            -d text="$MESSAGE" \
+            -d parse_mode="Markdown"
 
   publish-report:
     runs-on: ubuntu-latest
