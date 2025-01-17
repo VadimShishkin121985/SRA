@@ -16,7 +16,7 @@ class MenuTools:
         self.sign_in_locator = (By.XPATH, '//a[@class="navbar__link navbar__link_signIn | js-nav-item"]')
         self.profile_dropdown_locator = (By.XPATH, '//a[contains(@class,"navbarDropdown__button navbarDropdown__button_profile")]')
         self.profile_name_locator = (By.XPATH, '//span[@class="navbarDropdown__profile-name"]')
-        self.logistic_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Logistics Explorer"]')
+        self.logistic_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Logistics Explore"]')
         self.container_tracking_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][normalize-space()="See your cargo location on the map in real-time"]')
         self.ship_schedules_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][contains(text(),"Find sailing schedules by route or vessel with mul")]')
         self.air_tracking_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][normalize-space()="Track your air cargoes by airwaybill number"]')
