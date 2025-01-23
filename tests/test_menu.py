@@ -17,35 +17,35 @@ from pages.menu_pages.menu_tools import MenuTools
 class TestToolsMenu:
     def setup_method(self):
         self.driver: WebDriver = self.driver
+        # Инициализируем все страницы в setup_method
+        self._page_menu_tools = MenuTools(self.driver).open()
+        self._page_menu_services = MenuServices(self.driver).open()
+        self._page_menu_references = MenuReferences(self.driver).open()
+        self._page_menu_company = MenuCompany(self.driver).open()
+        self._page_footer = MenuFooter(self.driver).open()
+
+    def teardown_method(self):
+        # Закрываем браузер после каждого теста
+        self.driver.quit()
 
     @property
     def page_menu_tools(self):
-        if not hasattr(self, '_page_menu_tools'):
-            self._page_menu_tools = MenuTools(self.driver).open()
         return self._page_menu_tools
 
     @property
     def page_menu_services(self):
-        if not hasattr(self, '_page_menu_services'):
-            self._page_menu_services = MenuServices(self.driver).open()
         return self._page_menu_services
 
     @property
     def page_menu_references(self):
-        if not hasattr(self, '_page_menu_references'):
-            self._page_menu_references = MenuReferences(self.driver).open()
         return self._page_menu_references
 
     @property
     def page_menu_company(self):
-        if not hasattr(self, '_page_menu_company'):
-            self._page_menu_company = MenuCompany(self.driver).open()
         return self._page_menu_company
 
     @property
     def page_footer(self):
-        if not hasattr(self, '_page_footer'):
-            self._page_footer = MenuFooter(self.driver).open()
         return self._page_footer
 
     def test_menu_tools_le(self):
