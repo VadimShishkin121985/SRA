@@ -1,23 +1,18 @@
 import pytest
 from selenium import webdriver
-
-from chromedriver_autoinstaller import install
-
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from pages.main_page import MainPage
-from pages.menu_pages.footer_page import MenuFooter
-from pages.menu_pages.menu_company import MenuCompany
-from pages.menu_pages.menu_references import MenuReferences
-from pages.menu_pages.menu_services import MenuServices
 from pages.menu_pages.menu_tools import MenuTools
-
+from pages.menu_pages.menu_services import MenuServices
+from pages.menu_pages.menu_references import MenuReferences
+from pages.menu_pages.menu_company import MenuCompany
+from pages.menu_pages.footer_page import MenuFooter
 
 @pytest.mark.usefixtures('chrome')
 class TestToolsMenu:
     def setup_method(self):
-        self.driver: WebDriver = self.driver
-        # Инициализируем все страницы в setup_method
+        # Перезапускаем браузер для каждого теста
+        self.driver: WebDriver = webdriver.Chrome()
         self._page_menu_tools = MenuTools(self.driver).open()
         self._page_menu_services = MenuServices(self.driver).open()
         self._page_menu_references = MenuReferences(self.driver).open()
