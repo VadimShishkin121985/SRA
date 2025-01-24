@@ -1,5 +1,4 @@
 import pytest
-from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from pages.menu_pages.menu_tools import MenuTools
@@ -11,8 +10,7 @@ from pages.menu_pages.footer_page import MenuFooter
 @pytest.mark.usefixtures('chrome')
 class TestToolsMenu:
     def setup_method(self):
-        # Перезапускаем браузер для каждого теста
-        self.driver: WebDriver = webdriver.Chrome()
+        # Используем драйвер из фикстуры
         self._page_menu_tools = MenuTools(self.driver).open()
         self._page_menu_services = MenuServices(self.driver).open()
         self._page_menu_references = MenuReferences(self.driver).open()
