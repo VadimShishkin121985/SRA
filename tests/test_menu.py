@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
 
@@ -9,13 +11,8 @@ from pages.menu_pages.footer_page import MenuFooter
 
 @pytest.mark.usefixtures('chrome')
 class TestToolsMenu:
-    def setup_method(self):
-        # Используем драйвер из фикстуры
-        self._page_menu_tools = MenuTools(self.driver).open()
-        self._page_menu_services = MenuServices(self.driver).open()
-        self._page_menu_references = MenuReferences(self.driver).open()
-        self._page_menu_company = MenuCompany(self.driver).open()
-        self._page_footer = MenuFooter(self.driver).open()
+    def setup_method(self, driver):  # Предполагаем, что фикстура driver настроена
+        self.driver: WebDriver = self.driver
 
     def teardown_method(self):
         # Закрываем браузер после каждого теста
@@ -23,29 +20,41 @@ class TestToolsMenu:
 
     @property
     def page_menu_tools(self):
+        if not hasattr(self, '_page_menu_tools'):
+            self._page_menu_tools = MenuTools(self.driver).open()
         return self._page_menu_tools
 
     @property
     def page_menu_services(self):
+        if not hasattr(self, '_page_menu_services'):
+            self._page_menu_services = MenuServices(self.driver).open()
         return self._page_menu_services
 
     @property
     def page_menu_references(self):
+        if not hasattr(self, '_page_menu_references'):
+            self._page_menu_references = MenuReferences(self.driver).open()
         return self._page_menu_references
 
     @property
     def page_menu_company(self):
+        if not hasattr(self, '_page_menu_company'):
+            self._page_menu_company = MenuCompany(self.driver).open()
         return self._page_menu_company
 
     @property
     def page_footer(self):
+        if not hasattr(self, '_page_footer'):
+            self._page_footer = MenuFooter(self.driver).open()
         return self._page_footer
 
     def test_menu_tools_le(self):
         self.page_menu_tools.go_to_logistic_explorer_page()
 
+
     def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
+        time.sleep(2)
 
     def test_menu_tools_air_tracking(self):
         self.page_menu_tools.go_to_air_tracking_page()

@@ -70,50 +70,37 @@ jobs:
           retention-days: 5
 
   test:
+    needs: download-history
     runs-on: ubuntu-latest
-    name: Run tests
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python-version: "3.10"
 
       - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-          google-chrome --version
-
-      - name: Install ChromeDriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          curl -L -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-          unzip chromedriver.zip
-          chmod +x chromedriver
-          sudo mv chromedriver /usr/local/bin/
-          chromedriver --version
+        run: sudo apt-get install google-chrome-stable
+         
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
       - name: Download history
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: allure-history
           path: allure-results
         continue-on-error: true
 
       - name: Run tests
+        id: run_tests
         run: |
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
 
       - name: Store allure results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: allure-results
           path: allure-results
@@ -132,7 +119,7 @@ jobs:
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
 
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
 
       - name: Generate Report
         run: |
@@ -210,12 +197,11 @@ jobs:
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
 
       - name: Store generated report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: _site
           path: _site
           retention-days: 1
-
 
   publish-report:
     runs-on: ubuntu-latest
@@ -226,7 +212,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: _site
           path: _site

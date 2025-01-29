@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options
 def chrome(request):
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # Новый режим headless
+    #chrome_options.add_argument("--headless=new")  # Новый режим headless
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -17,6 +17,30 @@ def chrome(request):
     chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--disable-notifications")
+    
+    # Отключаем Privacy Settings и другие уведомления
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    chrome_options.add_experimental_option('prefs', {
+        'credentials_enable_service': False,
+        'profile.password_manager_enabled': False,
+        'profile.default_content_setting_values.notifications': 2,
+        'profile.default_content_settings.popups': 0,
+        'profile.default_content_setting_values.automatic_downloads': 1,
+        'profile.managed_default_content_settings.javascript': 1,
+        'profile.default_content_setting_values.cookies': 1,
+        'profile.managed_default_content_settings.cookies': 1,
+        'profile.default_content_setting_values.plugins': 1,
+        'profile.default_content_setting_values.geolocation': 2,
+        'profile.default_content_setting_values.media_stream': 2,
+        'profile.default_content_setting_values.images': 1,
+        'profile.default_content_setting_values.mixed_script': 1,
+        'profile.default_content_setting_values.mouselock': 2,
+        'profile.default_content_setting_values.protocol_handlers': 2,
+        'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
+    })
 
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
@@ -25,6 +49,10 @@ def chrome(request):
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)
     driver.implicitly_wait(10)  # Добавляем неявное ожидание
+    
+    # Добавляем JavaScript для отключения модального окна
+    driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'})
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
     if request.cls:
         request.cls.driver = driver
