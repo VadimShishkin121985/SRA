@@ -15,8 +15,15 @@ class TestToolsMenu:
         self.driver: WebDriver = self.driver
 
     def teardown_method(self):
-        # Закрываем браузер после каждого теста
-        self.driver.quit()
+        try:
+            if hasattr(self, 'driver'):
+                self.driver.quit()
+        except Exception as e:
+            print(f"Error in teardown: {str(e)}")
+        finally:
+            # Очищаем ссылки на страницы для следующего теста
+            if hasattr(self, '_page_menu_tools'):
+                delattr(self, '_page_menu_tools')
 
     @property
     def page_menu_tools(self):
