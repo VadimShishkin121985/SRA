@@ -9,21 +9,10 @@ from pages.menu_pages.menu_references import MenuReferences
 from pages.menu_pages.menu_company import MenuCompany
 from pages.menu_pages.footer_page import MenuFooter
 
+@pytest.mark.browser_scope('function')
 @pytest.mark.usefixtures('chrome')
 class TestToolsMenu:
-    def setup_method(self, driver):  # Предполагаем, что фикстура driver настроена
-        self.driver: WebDriver = self.driver
-
-    def teardown_method(self):
-        try:
-            if hasattr(self, 'driver'):
-                self.driver.quit()
-        except Exception as e:
-            print(f"Error in teardown: {str(e)}")
-        finally:
-            # Очищаем ссылки на страницы для следующего теста
-            if hasattr(self, '_page_menu_tools'):
-                delattr(self, '_page_menu_tools')
+    _class_cleanup = False  # Флаг для закрытия браузера в конце класса
 
     @property
     def page_menu_tools(self):
@@ -58,13 +47,16 @@ class TestToolsMenu:
     def test_menu_tools_le(self):
         self.page_menu_tools.go_to_logistic_explorer_page()
 
-
     def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
         time.sleep(2)
 
     def test_menu_tools_air_tracking(self):
         self.page_menu_tools.go_to_air_tracking_page()
+
+    @classmethod
+    def teardown_class(cls):
+        cls._class_cleanup = True  # Устанавливаем флаг для закрытия браузера
 
     # def test_menu_tools_schedule(self):
     #     self.page_menu_tools.go_to_schedules_page()
@@ -320,3 +312,10 @@ class TestToolsMenu:
     #
     # def test_footer_help(self):
     #  self.page_footer.go_to_help_from_footer()
+
+@pytest.mark.browser_scope('function')
+@pytest.mark.usefixtures('chrome')
+class TestAnotherFeature:
+    def test_something(self):
+        # Каждый тест получит новый браузер
+        pass

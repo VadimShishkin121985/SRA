@@ -3,8 +3,17 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
-@pytest.fixture(scope='class')
+@pytest.fixture
 def chrome(request):
+    """
+    Фикстура с динамическим scope, который определяется маркером класса:
+    @pytest.mark.browser_scope('class') - один браузер на весь класс
+    @pytest.mark.browser_scope('function') - новый браузер для каждого теста
+    """
+    # Получаем scope из маркера или используем 'function' по умолчанию
+    marker = request.node.get_closest_marker('browser_scope')
+    scope = marker.args[0] if marker else 'function'
+    
     # Настраиваем ChromeOptions
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")  # Новый режим headless
@@ -45,19 +54,23 @@ def chrome(request):
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
     
-    # Инициализируем драйвер с сервисом и опциями
+    # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)
-    driver.implicitly_wait(10)  # Добавляем неявное ожидание
+    driver.implicitly_wait(10)
     
-    # Добавляем JavaScript для отключения модального окна
-    driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'})
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-
+    # Устанавливаем драйвер для класса теста
     if request.cls:
         request.cls.driver = driver
+    
+    # Возвращаем драйвер
     yield driver
-    driver.quit()
+    
+    if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
+        try:
+            driver.quit()
+        except Exception as e:
+            print(f"Error closing browser: {str(e)}")
 
 
 @pytest.fixture(scope='class')
@@ -69,6 +82,12 @@ def firefox(request):
         request.cls.driver = driver
     yield driver
     driver.quit()
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "browser_scope(scope): mark test class to set browser scope"
+    )
 
 
 
