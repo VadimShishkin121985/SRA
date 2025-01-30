@@ -97,7 +97,7 @@ jobs:
       - name: Run tests
         id: run_tests
         run: |
-          mkdir -p allure-results  # Создаем директорию если её нет
+          mkdir -p allure-results
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
           # Создаем пустой junit.xml если тесты не создали его
           if [ ! -f "allure-results/junit.xml" ]; then
@@ -132,9 +132,23 @@ jobs:
 
       - name: Generate Report
         run: |
+          echo "Contents of current directory before report generation:"
+          ls -la
+          echo "Contents of allure-results directory:"
+          ls -la allure-results/
+          
+          # Копируем историю если она есть
           cp -r allure-results/history/* allure-results/ || true
+          
+          # Генерируем отчет
           allure generate allure-results -o _site --clean
+          
+          # Сохраняем историю
+          mkdir -p _site/history
           cp -r allure-results/history _site/history || true
+          
+          echo "Contents of generated _site directory:"
+          ls -la _site/
 
       - name: Generate Test Summary
         run: |
@@ -144,9 +158,11 @@ jobs:
           # Отладочная информация
           echo "Listing contents of current directory:"
           ls -la
+          echo "Listing contents of allure-results:"
+          ls -la allure-results/
           
           # Проверяем и показываем содержимое junit.xml
-          JUNIT_FILE="junit.xml"  # Изменено с allure-results/junit.xml на junit.xml
+          JUNIT_FILE="allure-results/junit.xml"  # Изменен путь
           if [ -f "$JUNIT_FILE" ]; then
             echo "Contents of junit.xml:"
             cat "$JUNIT_FILE"
