@@ -8,6 +8,7 @@ def chrome(request):
     """
     Фикстура с динамическим scope, который определяется маркером класса:
     @pytest.mark.browser_scope('class') - один браузер на весь класс
+
     @pytest.mark.browser_scope('function') - новый браузер для каждого теста
     """
     # Получаем scope из маркера или используем 'function' по умолчанию
