@@ -51,6 +51,7 @@ def chrome(request):
         'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
     })
 
+
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
     
