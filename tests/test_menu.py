@@ -312,10 +312,3 @@ class TestToolsMenu:
     #
     # def test_footer_help(self):
     #  self.page_footer.go_to_help_from_footer()
-
-@pytest.mark.browser_scope('function')
-@pytest.mark.usefixtures('chrome')
-class TestAnotherFeature:
-    def test_something(self):
-        # Каждый тест получит новый браузер
-        pass
