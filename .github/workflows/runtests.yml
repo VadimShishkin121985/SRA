@@ -144,13 +144,12 @@ jobs:
           # Отладочная информация
           echo "Listing contents of current directory:"
           ls -la
-          echo "Listing contents of allure-results:"
-          ls -la allure-results/
-
+          
           # Проверяем и показываем содержимое junit.xml
-          if [ -f "allure-results/junit.xml" ]; then
+          JUNIT_FILE="junit.xml"  # Изменено с allure-results/junit.xml на junit.xml
+          if [ -f "$JUNIT_FILE" ]; then
             echo "Contents of junit.xml:"
-            cat allure-results/junit.xml
+            cat "$JUNIT_FILE"
           else
             echo "junit.xml not found in expected location"
           fi
@@ -158,8 +157,6 @@ jobs:
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
 
-          # Используем полный путь к файлу и добавляем проверку
-          JUNIT_FILE="allure-results/junit.xml"
           if [ -f "$JUNIT_FILE" ]; then
             # Подсчет результатов из junit-отчета pytest
             TOTAL=$(xmllint --xpath "count(//testcase)" "$JUNIT_FILE")
