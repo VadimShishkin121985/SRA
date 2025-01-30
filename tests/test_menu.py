@@ -54,21 +54,24 @@ class TestToolsMenu:
     def test_menu_tools_air_tracking(self):
         self.page_menu_tools.go_to_air_tracking_page()
 
+    def test_menu_tools_schedule(self):
+        self.page_menu_tools.go_to_schedules_page()
+
+    def test_menu_tools_lm(self):
+        self.page_menu_tools.go_to_logistics_map_page()
+
+    def test_menu_tools_dt(self):
+        self.page_menu_tools.go_to_distance_and_time_page()
+
+    def test_menu_tools_lc(self):
+        self.page_menu_tools.go_to_load_calculator_page()
+
     @classmethod
     def teardown_class(cls):
         cls._class_cleanup = True  # Устанавливаем флаг для закрытия браузера
 
-    # def test_menu_tools_schedule(self):
-    #     self.page_menu_tools.go_to_schedules_page()
-    #
-    # def test_menu_tools_lm(self):
-    #     self.page_menu_tools.go_to_logistics_map_page()
-    #
-    # def test_menu_tools_dt(self):
-    #     self.page_menu_tools.go_to_distance_and_time_page()
-    #
-    # def test_menu_tools_lc(self):
-    #     self.page_menu_tools.go_to_load_calculator_page()
+
+
     #
     # def test_menu_tools_fi(self):
     #     self.page_menu_tools.go_to_freight_index_page()
