@@ -100,7 +100,7 @@ jobs:
           pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
 
       - name: Store allure results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
@@ -197,7 +197,7 @@ jobs:
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
 
       - name: Store generated report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: _site
           path: _site
@@ -212,7 +212,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: _site
           path: _site
