@@ -141,37 +141,52 @@ jobs:
           # Установка xmllint
           sudo apt-get update && sudo apt-get install -y libxml2-utils
 
-          # Проверяем наличие директории и файла
-          mkdir -p allure-results
-          if [ ! -f "allure-results/junit.xml" ]; then
-            echo "junit.xml not found, creating empty report"
-            echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="1" failures="0" hostname="localhost" name="pytest" skipped="0" tests="0" time="0" timestamp=""><error message="No tests were executed">Test execution failed or no tests were found</error></testsuite></testsuites>' > allure-results/junit.xml
+          # Отладочная информация
+          echo "Listing contents of current directory:"
+          ls -la
+          echo "Listing contents of allure-results:"
+          ls -la allure-results/
+
+          # Проверяем и показываем содержимое junit.xml
+          if [ -f "allure-results/junit.xml" ]; then
+            echo "Contents of junit.xml:"
+            cat allure-results/junit.xml
+          else
+            echo "junit.xml not found in expected location"
           fi
 
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
 
-          # Проверяем наличие XML файла
-          echo "Checking for junit.xml file:"
-          ls -l allure-results/junit.xml
+          # Используем полный путь к файлу и добавляем проверку
+          JUNIT_FILE="allure-results/junit.xml"
+          if [ -f "$JUNIT_FILE" ]; then
+            # Подсчет результатов из junit-отчета pytest
+            TOTAL=$(xmllint --xpath "count(//testcase)" "$JUNIT_FILE")
+            FAILED=$(xmllint --xpath "count(//testcase[failure])" "$JUNIT_FILE" || echo "0")
+            ERROR=$(xmllint --xpath "count(//testcase[error])" "$JUNIT_FILE" || echo "0")
+            SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" "$JUNIT_FILE" || echo "0")
 
-          # Подсчет результатов из junit-отчета pytest
-          TOTAL=$(xmllint --xpath "count(//testcase)" allure-results/junit.xml)
-          FAILED=$(xmllint --xpath "count(//testcase[failure])" allure-results/junit.xml || echo "0")
-          ERROR=$(xmllint --xpath "count(//testcase[error])" allure-results/junit.xml || echo "0")
-          SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" allure-results/junit.xml || echo "0")
+            # Вычисляем количество успешных тестов
+            FAILED=$((FAILED + ERROR))
+            PASSED=$((TOTAL - FAILED - SKIPPED))
 
-          # Вычисляем количество успешных тестов
-          FAILED=$((FAILED + ERROR))
-          PASSED=$((TOTAL - FAILED - SKIPPED))
-
-          # Подсчет процента успешных тестов
-          if [ $TOTAL -gt 0 ]; then
-            PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
+            # Подсчет процента успешных тестов
+            if [ $TOTAL -gt 0 ]; then
+              PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL) * 100 }")
+            else
+              PASS_RATE=0
+            fi
           else
+            echo "Error: junit.xml not found at $JUNIT_FILE"
+            TOTAL=0
+            PASSED=0
+            FAILED=0
+            SKIPPED=0
             PASS_RATE=0
           fi
 
+          # Вывод статистики
           echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "Current Run Statistics:" >> $GITHUB_STEP_SUMMARY
@@ -182,12 +197,11 @@ jobs:
           echo "📈 Pass Rate: ${PASS_RATE}%" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-          # Добавляем список упавших тестов из junit.xml
-          if [ $FAILED -gt 0 ]; then
+          # Добавляем список упавших тестов только если они есть
+          if [ $FAILED -gt 0 ] && [ -f "$JUNIT_FILE" ]; then
             echo "### ❌ Failed Tests:" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            # Получаем имена упавших тестов из того же файла junit.xml
-            xmllint --xpath "//testcase[failure or error]/@name" allure-results/junit.xml 2>/dev/null | \
+            xmllint --xpath "//testcase[failure or error]/@name" "$JUNIT_FILE" 2>/dev/null | \
               sed -E 's/name="([^"]+)"/• \1/g' >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
