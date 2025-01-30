@@ -128,17 +128,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: allure-results-*
+          path: allure-results
           merge-multiple: true
 
       - name: Generate Report
         run: |
-          echo "Contents of current directory before report generation:"
+          # Создаем директорию allure-results и копируем в нее все результаты
+          mkdir -p allure-results
+          mv *.json allure-results/ || true
+          mv junit.xml allure-results/ || true
+          
+          echo "Contents of current directory after moving files:"
           ls -la
           echo "Contents of allure-results directory:"
           ls -la allure-results/
           
           # Копируем историю если она есть
-          cp -r allure-results/history/* allure-results/ || true
+          if [ -d "allure-results/history" ]; then
+            cp -r allure-results/history/* allure-results/ || true
+          fi
           
           # Генерируем отчет
           allure generate allure-results -o _site --clean
