@@ -100,45 +100,39 @@ jobs:
           mkdir -p allure-results
           echo "Running pytest..."
           
-          # Запускаем тесты и сохраняем результат
-          pytest_output=$(pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v \
+          # Запускаем тесты напрямую без сохранения в переменную
+          pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v \
             --alluredir=allure-results \
-            --junitxml=allure-results/junit.xml || true)
-          
-          echo "Test output:"
-          echo "$pytest_output"
+            --junitxml=junit.xml || true
           
           echo "Test execution completed"
           echo "Checking test results:"
-          ls -la allure-results/
           
-          if [ -f "allure-results/junit.xml" ]; then
-            echo "junit.xml was created:"
-            cat allure-results/junit.xml
-          else
-            echo "junit.xml was not created, using empty template"
-            echo '<?xml version="1.0" encoding="utf-8"?>
-            <testsuites>
-              <testsuite name="pytest" errors="0" failures="0" skipped="0" tests="0" time="0" timestamp="">
-                <properties>
-                  <property name="empty_run" value="true"/>
-                </properties>
-              </testsuite>
-            </testsuites>' > allure-results/junit.xml
+          # Показываем результаты тестов
+          if [ -f "junit.xml" ]; then
+            echo "junit.xml was created in root directory:"
+            cat junit.xml
+            # Копируем файл в allure-results
+            cp junit.xml allure-results/
           fi
           
-          # Проверяем содержимое директории после выполнения тестов
-          echo "Final contents of allure-results:"
+          echo "Contents of allure-results directory:"
           ls -la allure-results/
+          
+          # Проверяем количество тестов
+          if [ -f "junit.xml" ]; then
+            TEST_COUNT=$(grep -c "<testcase" junit.xml)
+            echo "Number of tests found: $TEST_COUNT"
+          fi
 
       - name: Store allure results
-        if: always()  # Выполняем даже если тесты упали
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ github.run_id }}
           path: |
             allure-results/
-            allure-results/**/*
+            junit.xml
           retention-days: 1
           overwrite: true
 
@@ -213,44 +207,23 @@ jobs:
           sudo apt-get update && sudo apt-get install -y libxml2-utils
 
           echo "=== Debug Information ==="
-          echo "Current directory:"
-          pwd
+          echo "Looking for junit.xml files:"
+          find . -name "junit.xml" -type f
           
-          echo "\nContents of current directory:"
-          ls -la
+          # Пробуем найти junit.xml в разных местах
+          for xml in $(find . -name "junit.xml" -type f); do
+            echo "Found junit.xml at: $xml"
+            echo "Contents of $xml:"
+            cat "$xml"
+            echo "Number of tests in $xml:"
+            grep -c "<testcase" "$xml" || echo "0"
+            # Используем первый найденный файл
+            JUNIT_FILE="$xml"
+            break
+          done
           
-          echo "\nContents of allure-results directory:"
-          ls -la allure-results/
-          
-          echo "\nChecking junit.xml in different locations:"
-          echo "In current dir:"
-          ls -la junit.xml || echo "Not found in current dir"
-          echo "In allure-results:"
-          ls -la allure-results/junit.xml || echo "Not found in allure-results"
-          
-          # Проверяем и показываем содержимое junit.xml
-          JUNIT_FILE="allure-results/junit.xml"
-          if [ -f "$JUNIT_FILE" ]; then
-            echo "\nContents of $JUNIT_FILE:"
-            cat "$JUNIT_FILE"
-            
-            echo "\nFile encoding:"
-            file "$JUNIT_FILE"
-            
-            echo "\nXML validation:"
-            xmllint --noout "$JUNIT_FILE" && echo "XML is valid" || echo "XML validation failed"
-          else
-            echo "\njunit.xml not found at $JUNIT_FILE"
-            # Ищем файл в других местах
-            find . -name "junit.xml"
-          fi
-
-          echo "=== End Debug Information ==="
-
-          echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
-          echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
-
-          if [ -f "$JUNIT_FILE" ]; then
+          if [ -n "$JUNIT_FILE" ]; then
+            echo "Using $JUNIT_FILE for statistics"
             # Подсчет результатов из junit-отчета pytest
             TOTAL=$(xmllint --xpath "count(//testcase)" "$JUNIT_FILE")
             FAILED=$(xmllint --xpath "count(//testcase[failure])" "$JUNIT_FILE" || echo "0")
@@ -277,6 +250,11 @@ jobs:
           fi
 
           # Вывод статистики
+          echo "=== End Debug Information ==="
+
+          echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
+
           echo "### Test Execution Trend" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "Current Run Statistics:" >> $GITHUB_STEP_SUMMARY
