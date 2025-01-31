@@ -99,25 +99,46 @@ jobs:
         run: |
           mkdir -p allure-results
           echo "Running pytest..."
-          pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
+          
+          # Запускаем тесты и сохраняем результат
+          pytest_output=$(pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v \
+            --alluredir=allure-results \
+            --junitxml=allure-results/junit.xml || true)
+          
+          echo "Test output:"
+          echo "$pytest_output"
           
           echo "Test execution completed"
           echo "Checking test results:"
           ls -la allure-results/
           
           if [ -f "allure-results/junit.xml" ]; then
-            echo "junit.xml was created"
+            echo "junit.xml was created:"
             cat allure-results/junit.xml
           else
-            echo "Creating empty junit.xml"
-            echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="1" failures="0" hostname="localhost" name="pytest" skipped="0" tests="0" time="0" timestamp=""><error message="No tests were executed">Test execution failed or no tests were found</error></testsuite></testsuites>' > allure-results/junit.xml
+            echo "junit.xml was not created, using empty template"
+            echo '<?xml version="1.0" encoding="utf-8"?>
+            <testsuites>
+              <testsuite name="pytest" errors="0" failures="0" skipped="0" tests="0" time="0" timestamp="">
+                <properties>
+                  <property name="empty_run" value="true"/>
+                </properties>
+              </testsuite>
+            </testsuites>' > allure-results/junit.xml
           fi
+          
+          # Проверяем содержимое директории после выполнения тестов
+          echo "Final contents of allure-results:"
+          ls -la allure-results/
 
       - name: Store allure results
+        if: always()  # Выполняем даже если тесты упали
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ github.run_id }}
-          path: allure-results
+          path: |
+            allure-results/
+            allure-results/**/*
           retention-days: 1
           overwrite: true
 
@@ -142,15 +163,34 @@ jobs:
 
       - name: Generate Report
         run: |
+          echo "Initial directory state:"
+          pwd
+          ls -la
+          
+          echo "Checking downloaded artifacts:"
+          find . -type f -name "*.xml" -o -name "*.json" | while read file; do
+            echo "Found file: $file"
+            if [[ $file == *junit.xml ]]; then
+              echo "Contents of $file:"
+              cat "$file"
+            fi
+          done
+          
           # Создаем директорию allure-results и копируем в нее все результаты
           mkdir -p allure-results
-          mv *.json allure-results/ || true
-          mv junit.xml allure-results/ || true
           
-          echo "Contents of current directory after moving files:"
-          ls -la
-          echo "Contents of allure-results directory:"
+          # Копируем все файлы результатов
+          find . -maxdepth 1 -type f \( -name "*.json" -o -name "*.xml" \) -exec cp {} allure-results/ \;
+          
+          echo "Contents of allure-results after copying:"
           ls -la allure-results/
+          
+          if [ -f "allure-results/junit.xml" ]; then
+            echo "Found junit.xml in allure-results:"
+            cat allure-results/junit.xml
+          else
+            echo "junit.xml not found in allure-results"
+          fi
           
           # Копируем историю если она есть
           if [ -d "allure-results/history" ]; then
