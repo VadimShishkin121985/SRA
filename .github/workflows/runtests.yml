@@ -98,9 +98,18 @@ jobs:
         id: run_tests
         run: |
           mkdir -p allure-results
+          echo "Running pytest..."
           pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
-          # Создаем пустой junit.xml если тесты не создали его
-          if [ ! -f "allure-results/junit.xml" ]; then
+          
+          echo "Test execution completed"
+          echo "Checking test results:"
+          ls -la allure-results/
+          
+          if [ -f "allure-results/junit.xml" ]; then
+            echo "junit.xml was created"
+            cat allure-results/junit.xml
+          else
+            echo "Creating empty junit.xml"
             echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="1" failures="0" hostname="localhost" name="pytest" skipped="0" tests="0" time="0" timestamp=""><error message="No tests were executed">Test execution failed or no tests were found</error></testsuite></testsuites>' > allure-results/junit.xml
           fi
 
@@ -163,20 +172,40 @@ jobs:
           # Установка xmllint
           sudo apt-get update && sudo apt-get install -y libxml2-utils
 
-          # Отладочная информация
-          echo "Listing contents of current directory:"
+          echo "=== Debug Information ==="
+          echo "Current directory:"
+          pwd
+          
+          echo "\nContents of current directory:"
           ls -la
-          echo "Listing contents of allure-results:"
+          
+          echo "\nContents of allure-results directory:"
           ls -la allure-results/
           
+          echo "\nChecking junit.xml in different locations:"
+          echo "In current dir:"
+          ls -la junit.xml || echo "Not found in current dir"
+          echo "In allure-results:"
+          ls -la allure-results/junit.xml || echo "Not found in allure-results"
+          
           # Проверяем и показываем содержимое junit.xml
-          JUNIT_FILE="allure-results/junit.xml"  # Изменен путь
+          JUNIT_FILE="allure-results/junit.xml"
           if [ -f "$JUNIT_FILE" ]; then
-            echo "Contents of junit.xml:"
+            echo "\nContents of $JUNIT_FILE:"
             cat "$JUNIT_FILE"
+            
+            echo "\nFile encoding:"
+            file "$JUNIT_FILE"
+            
+            echo "\nXML validation:"
+            xmllint --noout "$JUNIT_FILE" && echo "XML is valid" || echo "XML validation failed"
           else
-            echo "junit.xml not found in expected location"
+            echo "\njunit.xml not found at $JUNIT_FILE"
+            # Ищем файл в других местах
+            find . -name "junit.xml"
           fi
+
+          echo "=== End Debug Information ==="
 
           echo "# 🎯 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "## 📊 Statistics" >> $GITHUB_STEP_SUMMARY
