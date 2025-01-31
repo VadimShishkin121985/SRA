@@ -85,7 +85,9 @@ jobs:
         run: sudo apt-get install google-chrome-stable
          
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip list  # Проверим установленные пакеты
 
       - name: Download history
         uses: actions/download-artifact@v4
@@ -100,28 +102,28 @@ jobs:
           mkdir -p allure-results
           echo "Running pytest..."
           
-          # Запускаем тесты напрямую без сохранения в переменную
-          pytest --maxfail=3 --reruns 1 --reruns-delay 2 --disable-warnings -v \
+          # Запускаем тесты с правильным синтаксисом
+          pytest --maxfail=3 --reruns=1 --reruns-delay=2 --disable-warnings -v \
             --alluredir=allure-results \
-            --junitxml=junit.xml || true
+            --junitxml=allure-results/junit.xml || true
           
           echo "Test execution completed"
           echo "Checking test results:"
           
           # Показываем результаты тестов
-          if [ -f "junit.xml" ]; then
+          if [ -f "allure-results/junit.xml" ]; then
             echo "junit.xml was created in root directory:"
-            cat junit.xml
+            cat allure-results/junit.xml
             # Копируем файл в allure-results
-            cp junit.xml allure-results/
+            cp allure-results/junit.xml allure-results/
           fi
           
           echo "Contents of allure-results directory:"
           ls -la allure-results/
           
           # Проверяем количество тестов
-          if [ -f "junit.xml" ]; then
-            TEST_COUNT=$(grep -c "<testcase" junit.xml)
+          if [ -f "allure-results/junit.xml" ]; then
+            TEST_COUNT=$(grep -c "<testcase" allure-results/junit.xml)
             echo "Number of tests found: $TEST_COUNT"
           fi
 
