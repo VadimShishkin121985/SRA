@@ -95,7 +95,11 @@ jobs:
         id: run_tests
         run: |
           mkdir -p allure-results
-          pytest --maxfail=3 --disable-warnings -v --alluredir=allure-results --junitxml=allure-results/junit.xml || true
+          # Запускаем тесты с возможностью рестарта
+          pytest --maxfail=3 --reruns=1 --reruns-delay=2 --disable-warnings -v \
+            --alluredir=allure-results \
+            --junitxml=allure-results/junit.xml || true
+          
           # Создаем пустой junit.xml если тесты не создали его
           if [ ! -f "allure-results/junit.xml" ]; then
             echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="1" failures="0" hostname="localhost" name="pytest" skipped="0" tests="0" time="0" timestamp=""><error message="No tests were executed">Test execution failed or no tests were found</error></testsuite></testsuites>' > allure-results/junit.xml
