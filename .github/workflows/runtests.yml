@@ -1,7 +1,13 @@
 name: Automated tests
 
 on:
-  push
+  push:  # Оставляем запуск при push
+  schedule:
+    # Запуск в 7:00 по Киеву (UTC+2)
+    # Указываем 5:00 UTC, что соответствует 7:00 по Киеву
+    - cron: '0 5 * * *'
+
+  workflow_dispatch:  # Добавляем возможность ручного запуска
 
 permissions:
   contents: write
@@ -95,14 +101,16 @@ jobs:
         id: run_tests
         run: |
           mkdir -p allure-results
-          # Запускаем тесты с возможностью рестарта
-          pytest --maxfail=3 --reruns=1 --reruns-delay=2 --disable-warnings -v \
-            --alluredir=allure-results \
-            --junitxml=allure-results/junit.xml || true
-          
-          # Создаем пустой junit.xml если тесты не создали его
-          if [ ! -f "allure-results/junit.xml" ]; then
-            echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="1" failures="0" hostname="localhost" name="pytest" skipped="0" tests="0" time="0" timestamp=""><error message="No tests were executed">Test execution failed or no tests were found</error></testsuite></testsuites>' > allure-results/junit.xml
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            # Если запуск по расписанию - только test_menu.py
+            pytest tests/test_menu.py --maxfail=3 --reruns=1 --reruns-delay=2 --disable-warnings -v \
+              --alluredir=allure-results \
+              --junitxml=allure-results/junit.xml || true
+          else
+            # Для остальных случаев - все тесты
+            pytest --maxfail=3 --reruns=1 --reruns-delay=2 --disable-warnings -v \
+              --alluredir=allure-results \
+              --junitxml=allure-results/junit.xml || true
           fi
       - name: Store allure results
         uses: actions/upload-artifact@v4
