@@ -66,15 +66,17 @@ class TestToolsMenu:
     def test_menu_tools_lc(self):
         self.page_menu_tools.go_to_load_calculator_page()
 
+    def test_menu_tools_fi(self):
+         self.page_menu_tools.go_to_freight_index_page()
+
+
     @classmethod
     def teardown_class(cls):
         cls._class_cleanup = True  # Устанавливаем флаг для закрытия браузера
 
 
 
-    #
-    # def test_menu_tools_fi(self):
-    #     self.page_menu_tools.go_to_freight_index_page()
+
     #
     # def test_menu_tools_route_planner(self):
     #     self.page_menu_tools.go_to_route_planer_page()
