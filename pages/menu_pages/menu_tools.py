@@ -41,8 +41,6 @@ class MenuTools(BasePage):
         self.driver.get(self.URL)
         return self
 
-
-
     def move_mouse_to_tools(self):
         self.privacy_setting()
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="tools"]')
@@ -54,8 +52,6 @@ class MenuTools(BasePage):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.container_tracking_locator).click()
         self.waiter_with_assert('#tracking_system_root')
-
-
 
     def waiter_with_assert(self, selector):
         wait = WebDriverWait(self.driver, 50)
@@ -70,13 +66,10 @@ class MenuTools(BasePage):
         self.waiter_with_assert('#shadow-wrapper-le')
         pass
 
-
-
     def go_to_schedules_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.ship_schedules_locator).click()
         self.waiter_with_assert('.FrpaIW')
-
 
     def go_to_air_tracking_page(self):
         self.move_mouse_to_tools()
