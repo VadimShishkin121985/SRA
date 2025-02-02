@@ -2,24 +2,21 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-import time
 
 @pytest.fixture
 def chrome(request):
     """
     Фикстура с динамическим scope, который определяется маркером класса:
     @pytest.mark.browser_scope('class') - один браузер на весь класс
-
     @pytest.mark.browser_scope('function') - новый браузер для каждого теста
     """
     # Получаем scope из маркера или используем 'function' по умолчанию
     marker = request.node.get_closest_marker('browser_scope')
     scope = marker.args[0] if marker else 'function'
-    
+
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    #chrome_options.add_argument("--headless=new")  # Новый режим headless
-    chrome_options.add_argument(f"--user-data-dir=/tmp/chrome-{time.time()}")  # Уникальная директория
+    chrome_options.add_argument("--headless=new")  # Новый режим headless
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -31,7 +28,7 @@ def chrome(request):
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--disable-notifications")
-    
+
     # Отключаем Privacy Settings и другие уведомления
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
     chrome_options.add_experimental_option('useAutomationExtension', False)
@@ -57,19 +54,19 @@ def chrome(request):
 
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
-    
+
     # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(120)  # 2 минуты на загрузку страницы
-    driver.implicitly_wait(30)  # 30 секунд на поиск элементов
-    
+    driver.set_page_load_timeout(30)
+    driver.implicitly_wait(10)
+
     # Устанавливаем драйвер для класса теста
     if request.cls:
         request.cls.driver = driver
-    
+
     # Возвращаем драйвер
     yield driver
-    
+
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
             driver.quit()
@@ -154,4 +151,3 @@ def pytest_configure(config):
 # def pytest_runtest_makereport(item, call):
 #     outcome = yield
 #     rep = outcome.get_result()
-#    setattr(item, "rep_" + rep.when, rep)
