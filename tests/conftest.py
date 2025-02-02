@@ -2,6 +2,8 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture
 def chrome(request):
@@ -17,7 +19,7 @@ def chrome(request):
     
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # Новый режим headless
+    #chrome_options.add_argument("--headless=new")  # Новый режим headless
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -29,6 +31,10 @@ def chrome(request):
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_argument("--ignore-certificate-errors")
+    chrome_options.add_argument("--ignore-ssl-errors")
     
     # Отключаем Privacy Settings и другие уведомления
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
@@ -58,8 +64,20 @@ def chrome(request):
     
     # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)
-    driver.implicitly_wait(10)
+    driver.set_page_load_timeout(120)  # 2 минуты на загрузку страницы
+    driver.implicitly_wait(30)  # 30 секунд на поиск элементов
+    
+    # Добавляем явное ожидание как атрибут драйвера
+    driver.wait = WebDriverWait(driver, timeout=30)
+    
+    # Добавляем функцию для безопасного поиска элементов
+    def safe_find_element(by, value):
+        try:
+            return driver.wait.until(EC.presence_of_element_located((by, value)))
+        except:
+            return driver.wait.until(EC.visibility_of_element_located((by, value)))
+    
+    driver.safe_find_element = safe_find_element
     
     # Устанавливаем драйвер для класса теста
     if request.cls:
