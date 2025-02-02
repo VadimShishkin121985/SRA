@@ -43,6 +43,7 @@ class MenuServices(BasePage):
         self.teen_foot_containers_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="10-foot containers"]')
 
     def move_mouse_to_services(self):
+        self.privacy_setting()
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="services"]')
         actions = ActionChains(self.driver)
         actions.move_to_element(menu_tools).perform()
