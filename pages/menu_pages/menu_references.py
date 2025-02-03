@@ -45,9 +45,11 @@ class MenuReferences(BasePage):
 
     def move_mouse_to_references(self):
         self.privacy_setting()
-        menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="references"]')
+        wait = WebDriverWait(self.driver, 50)
+        menu_references = wait.until(EC.presence_of_element_located((By.XPATH, '//a[@data-dropdown="references"]')))
+        wait.until(EC.visibility_of(menu_references))
         actions = ActionChains(self.driver)
-        actions.move_to_element(menu_tools).perform()
+        actions.move_to_element(menu_references).perform()
         time.sleep(2)
 
     def waiter_with_assert(self, selector):

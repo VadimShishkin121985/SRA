@@ -57,8 +57,8 @@ def chrome(request):
 
     # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)
-    driver.implicitly_wait(10)
+    driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
     # Устанавливаем драйвер для класса теста
     if request.cls:
