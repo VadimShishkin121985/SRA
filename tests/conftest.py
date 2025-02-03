@@ -16,7 +16,7 @@ def chrome(request):
 
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # Новый режим headless
+    #chrome_options.add_argument("--headless=new")  # Новый режим headless
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -57,7 +57,7 @@ def chrome(request):
 
     # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
     # Устанавливаем драйвер для класса теста

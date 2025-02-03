@@ -25,7 +25,7 @@ class BasePage:
 
         # Найти кнопку внутри Shadow DOM через JavaScript по атрибуту data-testid
         deny_button = self.driver.execute_script(
-            'return arguments[0].shadowRoot.querySelector("[data-testid=\'uc-deny-all-button\']")',
+            'return arguments[0].shadowRoot.querySelector("[data-testid=\'uc-accept-all-button\']")',
             shadow_host
         )
         deny_button.click()
