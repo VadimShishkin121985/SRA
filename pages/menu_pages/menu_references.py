@@ -44,6 +44,7 @@ class MenuReferences(BasePage):
         self.truck_types_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Truck types"]')
 
     def move_mouse_to_references(self):
+        self.privacy_setting()
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="references"]')
         actions = ActionChains(self.driver)
         actions.move_to_element(menu_tools).perform()

@@ -27,6 +27,7 @@ class MenuCompany(BasePage):
         self.blog_page_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_uppercase"][normalize-space()="blog"]')
 
     def move_mouse_to_company(self):
+        self.privacy_setting()
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="company"]')
         actions = ActionChains(self.driver)
         actions.move_to_element(menu_tools).perform()

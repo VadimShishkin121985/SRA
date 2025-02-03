@@ -6,8 +6,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import time
 
+from tests.base_page import BasePage
 
-class MenuFooter:
+
+class MenuFooter(BasePage):
     _instance = None
     URL = 'https://www.searates.com/'
 
@@ -49,6 +51,7 @@ class MenuFooter:
         self.footer_affiliates_locator = (By.XPATH, '//a[normalize-space()="Affiliates"]')
 
     def move_mouse_to_footer(self):
+        self.privacy_setting()
         time.sleep(3)
         menu_tools = self.driver.find_element(By.XPATH, '//footer[@class="footer"]')
         actions = ActionChains(self.driver)
