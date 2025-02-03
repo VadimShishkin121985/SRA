@@ -2,6 +2,9 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import os
+import signal
+import psutil
 
 @pytest.fixture
 def chrome(request):
@@ -69,9 +72,30 @@ def chrome(request):
 
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
+            # Получаем PID процесса браузера
+            browser_pid = driver.service.process.pid
             driver.quit()
+            
+            # Закрываем все дочерние процессы
+            parent = psutil.Process(browser_pid)
+            for child in parent.children(recursive=True):
+                try:
+                    os.kill(child.pid, signal.SIGTERM)
+                except:
+                    pass
+            
+            # Закрываем основной процесс
+            os.kill(browser_pid, signal.SIGTERM)
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
+        finally:
+            # Дополнительная проверка и закрытие процессов Chrome
+            for proc in psutil.process_iter(['pid', 'name']):
+                try:
+                    if 'chrome' in proc.info['name'].lower():
+                        proc.kill()
+                except:
+                    pass
 
 
 @pytest.fixture(scope='class')
