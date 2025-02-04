@@ -37,6 +37,7 @@ class MenuTools(BasePage):
         self.carbon_emition_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__title-text"][normalize-space()="CO2 Calculator"]')
         self.searates_expres_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][normalize-space()="Efficient solution for Freight Forwarders"]')
 
+
     def open(self) -> 'MenuTools':
         self.driver.get(self.URL)
         return self
