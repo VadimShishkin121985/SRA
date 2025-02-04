@@ -45,10 +45,8 @@ class TestToolsMenu:
         return self._page_footer
 
     def test_menu_tools_le(self):
-        try:
-            self.page_menu_tools.go_to_logistic_explorer_page()
-        except Exception as e:
-            pytest.skip(f"Skipping due to connection issue: {str(e)}")
+        self.page_menu_tools.go_to_logistic_explorer_page()
+
 
     def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
@@ -79,11 +77,7 @@ class TestToolsMenu:
         self.page_menu_tools.go_to_co2_page()
 
     def test_menu_tools_erp(self):
-        try:
-            self.page_menu_tools.go_to_erp_page()
-            time.sleep(5)  # Добавляем дополнительное ожидание
-        except Exception as e:
-            pytest.skip(f"Skipping due to connection issue: {str(e)}")
+        self.page_menu_tools.go_to_erp_page()
 
     def test_menu_tools_searates_exp(self):
         self.page_menu_tools.go_to_se_page()
@@ -98,11 +92,7 @@ class TestToolsMenu:
         self.page_menu_tools.go_to_request_it_quote_page()
 
     def test_menu_services_request_quote(self):
-        try:
-            self.page_menu_services.go_to_request_a_quote_page()
-            time.sleep(5)  # Добавляем дополнительное ожидание
-        except Exception as e:
-            pytest.skip(f"Skipping due to connection issue: {str(e)}")
+        self.page_menu_services.go_to_request_a_quote_page()
 
     def test_menu_services_active_shipping_leads(self):
         self.page_menu_services.go_to_all_shipping_leads_page()

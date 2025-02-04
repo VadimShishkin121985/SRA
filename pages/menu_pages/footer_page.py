@@ -194,7 +194,7 @@ class MenuFooter(BasePage):
     def go_to_help_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_company_help_locator).click()
-        self.waiter_with_assert('._2XW0q_tjvjUGuWUfBlZYEw')
+        self.waiter_with_assert('.naIIwU')
         self.driver.back()
 
     def go_to_contact_us_from_footer(self):
