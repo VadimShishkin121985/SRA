@@ -79,7 +79,7 @@ class MenuServices(BasePage):
     def go_to_importers_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.importer_page_locator).click()
-        self.waiter_with_assert('.filter-img')
+        self.waiter_with_assert('.section-btn.cu_open-form')
 
     def go_to_fcl_shipping_services_page(self):
         self.move_mouse_to_services()
