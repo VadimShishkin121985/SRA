@@ -2,6 +2,9 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import tempfile
+import os
+import time
 
 @pytest.fixture
 def chrome(request):
@@ -14,9 +17,14 @@ def chrome(request):
     marker = request.node.get_closest_marker('browser_scope')
     scope = marker.args[0] if marker else 'function'
 
+    # Создаем временную директорию для пользовательских данных Chrome
+    temp_dir = os.path.join(tempfile.gettempdir(), f'chrome_test_{time.time()}')
+    os.makedirs(temp_dir, exist_ok=True)
+
     # Настраиваем ChromeOptions
     chrome_options = Options()
     #chrome_options.add_argument("--headless=new")  # Новый режим headless
+    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -70,6 +78,12 @@ def chrome(request):
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
             driver.quit()
+            # Очищаем временную директорию
+            try:
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except:
+                pass
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
 
