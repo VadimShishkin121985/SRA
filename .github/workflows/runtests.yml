@@ -85,9 +85,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install Chrome
-        run: |
-          sudo apt-get install google-chrome-stable
-          sudo apt-get install -y xvfb
+        run: sudo apt-get install google-chrome-stable
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -105,12 +103,12 @@ jobs:
           mkdir -p allure-results
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             # Если запуск по расписанию - только test_menu.py
-            xvfb-run --server-args="-screen 0 1920x1080x24" pytest tests/test_menu.py --reruns=1 --reruns-delay=3 --disable-warnings -v \
+            pytest tests/test_menu.py --reruns=1 --reruns-delay=3 --disable-warnings -v \
               --alluredir=allure-results \
               --junitxml=allure-results/junit.xml || true
           else
             # Для остальных случаев - все тесты
-            xvfb-run --server-args="-screen 0 1920x1080x24" pytest --reruns=1 --reruns-delay=3 --disable-warnings -v \
+            pytest --reruns=1 --reruns-delay=3 --disable-warnings -v \
               --alluredir=allure-results \
               --junitxml=allure-results/junit.xml || true
           fi
