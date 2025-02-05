@@ -112,6 +112,19 @@ jobs:
               --alluredir=allure-results \
               --junitxml=allure-results/junit.xml || true
           fi
+          
+          # Перезапуск упавших тестов
+          if [ -f "allure-results/junit.xml" ]; then
+            echo "Rerunning failed tests..."
+            FAILED_TESTS=$(xmllint --xpath "//testcase[failure or error]/@name" "allure-results/junit.xml" 2>/dev/null | \
+              sed -E 's/name="([^"]+)"/\1/g' | tr ' ' '\n' | sed 's/^/tests\/test_menu.py::/g')
+            if [ ! -z "$FAILED_TESTS" ]; then
+              echo "Failed tests to rerun: $FAILED_TESTS"
+              pytest $FAILED_TESTS --disable-warnings -v \
+                --alluredir=allure-results/rerun \
+                --junitxml=allure-results/rerun_junit.xml || true
+            fi
+          fi
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
