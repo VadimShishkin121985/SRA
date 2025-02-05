@@ -120,9 +120,32 @@ jobs:
               sed -E 's/name="([^"]+)"/\1/g' | tr ' ' '\n' | sed 's/^/tests\/test_menu.py::/g')
             if [ ! -z "$FAILED_TESTS" ]; then
               echo "Failed tests to rerun: $FAILED_TESTS"
-              pytest $FAILED_TESTS --disable-warnings -v \
-                --alluredir=allure-results/rerun \
-                --junitxml=allure-results/rerun_junit.xml || true
+              echo "Waiting 30 seconds before rerun..."
+              sleep 30  # Даем время на освобождение ресурсов
+              
+              # Убиваем все процессы Chrome перед перезапуском
+              pkill chrome || true
+              pkill chromedriver || true
+              sleep 5
+              
+              # Запускаем каждый тест отдельно с паузой
+              for test in $FAILED_TESTS; do
+                echo "Rerunning test: $test"
+                # Очищаем кэш браузера перед каждым тестом
+                rm -rf /tmp/.com.google.Chrome* || true
+                rm -rf /tmp/.org.chromium.Chromium* || true
+                rm -rf ~/.cache/google-chrome || true
+                
+                pytest "$test" --disable-warnings -v \
+                  --alluredir=allure-results/rerun \
+                  --junitxml=allure-results/rerun_junit.xml || true
+                sleep 5  # Пауза между тестами
+                
+                # Убиваем процессы после каждого теста
+                pkill chrome || true
+                pkill chromedriver || true
+                sleep 2
+              done
             fi
           fi
       - name: Store allure results

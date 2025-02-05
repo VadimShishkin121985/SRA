@@ -19,13 +19,18 @@ class BasePage:
         return element
 
     def privacy_setting(self):
-        time.sleep(2)
+        time.sleep(5)  # Увеличиваем ожидание
         # Найти shadow host по ID
-        shadow_host = self.driver.find_element(By.ID, 'usercentrics-root')
+        wait = WebDriverWait(self.driver, 20)
+        shadow_host = wait.until(
+            EC.presence_of_element_located((By.ID, 'usercentrics-root'))
+        )
 
-        # Найти кнопку внутри Shadow DOM через JavaScript по атрибуту data-testid
+        # Найти кнопку внутри Shadow DOM через JavaScript
         deny_button = self.driver.execute_script(
             'return arguments[0].shadowRoot.querySelector("[data-testid=\'uc-accept-all-button\']")',
             shadow_host
         )
+        wait.until(EC.element_to_be_clickable(deny_button))
         deny_button.click()
+        time.sleep(2)  # Ждем после клика
