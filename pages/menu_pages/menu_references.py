@@ -21,7 +21,7 @@ class MenuReferences(BasePage):
         super().__init__(driver)
         self.driver: WebDriver = driver
         self.menu_references_locator = (By.XPATH, '//a[@data-dropdown="references"]')
-        self.world_sea_ports_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="World sea ports"]')
+        self.world_sea_ports_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="World sea ports"]')
         self.find_port_by_shipping_line_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="Find ports by shipping line"]')
         self.sea_line_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Sea lines explorer"]')
         self.unit_converter_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Unit converter"]')
@@ -40,7 +40,7 @@ class MenuReferences(BasePage):
         self.palet_dimensions_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Pallet dimensions"]')
         self.uld_container_type = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="ULD container types"]')
         self.type_of_railway_container_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Types of railway wagons"]')
-        self.vessel_types_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="Shipping lines directory"]')
+        self.vessel_types_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Vessel types"]')
         self.truck_types_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Truck types"]')
 
     def move_mouse_to_references(self):
@@ -158,7 +158,7 @@ class MenuReferences(BasePage):
     def go_to_vessel_type_page(self):
         self.move_mouse_to_references()
         self.driver.find_element(*self.vessel_types_locator).click()
-        self.waiter_with_assert('.shipping__list-title')
+        self.waiter_with_assert('.vessels__list-learn')
 
     def go_to_truck_type_page(self):
         self.move_mouse_to_references()

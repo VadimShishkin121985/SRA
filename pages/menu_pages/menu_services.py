@@ -21,7 +21,7 @@ class MenuServices(BasePage):
         super().__init__(driver)
         self.driver: WebDriver = driver
         self.menu_services_locator = (By.XPATH, '//a[@data-dropdown="services"]')
-        self.request_a_quote_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text dropMenu__text_icon"][normalize-space()="Request a quote"]')
+        self.request_a_quote_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//div[@class="dropMenu__text_icon"]')
         self.all_shipping_leads_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text dropMenu__text_icon"][normalize-space()="Active shipping leads"]')
         self.logistics_services_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text dropMenu__text_icon"][normalize-space()="Logistics services by country"]')
         self.carrier_forwarder_page_locator =(By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list dropMenu__list_block js-copy2"]//a[4]//span[1]')

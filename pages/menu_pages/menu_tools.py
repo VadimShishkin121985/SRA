@@ -26,7 +26,7 @@ class MenuTools(BasePage):
         self.logistics_map_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][contains(text(),"Interactive map for freight requests, transport an")]')
         self.distance_and_time_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][contains(text(),"Visual module with map, showing sea and land routi")]')
         self.route_planer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][normalize-space()="A tool for carriers to provide accurate tracking"]')
-        self.erp_page_locator =(By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][normalize-space()="Experimental solution built on Odoo framework"]')
+        self.erp_page_locator =(By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][contains(text(),"A highly cost effective and fully integrated ERP S")]')
         self.dev_portal_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Developer portal"]')
         self.element_devportal_locator = (By.XPATH, '//h1[@class="text-center h-text-gradient"]')
         self.freight_index_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__subtitle dropMenu__subtitle-visible"][contains(text(),"Freight analytics tool with historical data for se")]')
