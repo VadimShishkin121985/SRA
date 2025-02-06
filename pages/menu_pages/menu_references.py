@@ -22,10 +22,10 @@ class MenuReferences(BasePage):
         self.driver: WebDriver = driver
         self.menu_references_locator = (By.XPATH, '//a[@data-dropdown="references"]')
         self.world_sea_ports_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="World sea ports"]')
-        self.find_port_by_shipping_line_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="Find ports by shipping line"]')
+        self.find_port_by_shipping_line_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Find ports by shipping line"]')
         self.sea_line_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Sea lines explorer"]')
         self.unit_converter_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Unit converter"]')
-        self.demurage_and_storage_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="Demurrage & Storage"]')
+        self.demurage_and_storage_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Demurrage & Storage"]')
         self.shipping_lines_directory_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Shipping lines directory"]')
         self.incoterms_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Incoterms"]')
         self.imo_classes_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="IMO classes"]')
@@ -71,7 +71,7 @@ class MenuReferences(BasePage):
     def go_to_demurrage_and_storage(self):
         self.move_mouse_to_references()
         self.driver.find_element(*self.demurage_and_storage_locator).click()
-        self.waiter_with_assert('.button-center')
+        self.waiter_with_assert('.U17pN5')
 
     def go_to_sea_lines_explorer_page(self):
         self.move_mouse_to_references()

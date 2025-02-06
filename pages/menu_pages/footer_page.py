@@ -67,7 +67,7 @@ class MenuFooter(BasePage):
     def go_to_logistic_explorer_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_le_locator).click()
-        self.waiter_with_assert('.le-header__hero')
+        self.waiter_with_assert('#marketplace')
         self.driver.back()
         pass
 
@@ -92,7 +92,7 @@ class MenuFooter(BasePage):
     def go_to_load_calculator_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_lc_locator).click()
-        self.waiter_with_assert('.bFqpNG1R3Wtl2Vzq4oEY')
+        self.waiter_with_assert('.loadCalculator-wrapper')
         self.driver.back()
 
     def go_to_logistic_map_from_footer(self):
@@ -134,7 +134,7 @@ class MenuFooter(BasePage):
     def go_to_shippers_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_opportunities_for_shipper_locator).click()
-        self.waiter_with_assert('.header-left')
+        self.waiter_with_assert('.container')
         self.driver.back()
 
     def go_to_carriers_from_footer(self):
@@ -200,7 +200,7 @@ class MenuFooter(BasePage):
     def go_to_contact_us_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_contact_us_locator).click()
-        self.waiter_with_assert('.GJQ5in')
+        self.waiter_with_assert('.TSV5La')
         self.driver.back()
 
     def go_to_terms_from_footer(self):

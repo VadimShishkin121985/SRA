@@ -24,7 +24,7 @@ class MenuCompany(BasePage):
         self.about_us_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="About us"]')
         self.faqs_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="FAQs"]')
         self.blog_post_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list dropMenu__list_block dropMenu__list_footer dropMenu__list_max-width-full js-copy4"]//a[2]')
-        self.blog_page_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_uppercase"][normalize-space()="blog"]')
+        self.blog_page_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text_uppercase"][normalize-space()="blog"]')
 
     def move_mouse_to_company(self):
         self.privacy_setting()
@@ -42,7 +42,7 @@ class MenuCompany(BasePage):
     def go_to_contact_us_page(self):
         self.move_mouse_to_company()
         self.driver.find_element(*self.contact_us_locator).click()
-        self.waiter_with_assert('.IiUFLd')
+        self.waiter_with_assert('.TSV5La')
 
     def go_to_about_us_page(self):
         self.move_mouse_to_company()
@@ -52,7 +52,7 @@ class MenuCompany(BasePage):
     def go_to_faqs_page(self):
         self.move_mouse_to_company()
         self.driver.find_element(*self.faqs_locator).click()
-        self.waiter_with_assert('._2LYQ4jKG4HZgg2IDcx1NcY')
+        self.waiter_with_assert('.naIIwU')
 
     def go_to_blog_page(self):
         self.move_mouse_to_company()
