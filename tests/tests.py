@@ -14,6 +14,8 @@ from pages.sign_in_page import SignIn
 
 @pytest.mark.usefixtures('chrome')
 class Tests:
+    _class_cleanup = False  # Флаг для закрытия браузера в конце класса
+
     def setup_method(self):
         self.page_main = MainPage(self.driver).open()
         #self.service = self._get_gmail_service()
