@@ -120,7 +120,13 @@ jobs:
             if [[ "${{ github.event.inputs.test_file }}" == "Regression" ]]; then
               TEST_FILE="tests/test_menu.py"
             elif [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
-              TEST_FILE="tests/test.py"
+              TEST_FILE="tests/tests.py"
+            fi
+            
+            # Проверяем существование файла
+            if [ ! -f "$TEST_FILE" ]; then
+              echo "Error: Test file $TEST_FILE not found!"
+              exit 1
             fi
             
             # Запускаем выбранные тесты
@@ -132,8 +138,14 @@ jobs:
           # Перезапуск упавших тестов
           if [ -f "allure-results/junit.xml" ]; then
             echo "Rerunning failed tests..."
+            # Определяем префикс для перезапуска на основе выбранного файла
+            TEST_PREFIX="tests/test_menu.py"
+            if [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
+              TEST_PREFIX="tests/tests.py"
+            fi
+            
             FAILED_TESTS=$(xmllint --xpath "//testcase[failure or error]/@name" "allure-results/junit.xml" 2>/dev/null | \
-              sed -E 's/name="([^"]+)"/\1/g' | tr ' ' '\n' | sed 's/^/tests\/test_menu.py::/g')
+              sed -E 's/name="([^"]+)"/\1/g' | tr ' ' '\n' | sed "s/^/${TEST_PREFIX}::/g")
             if [ ! -z "$FAILED_TESTS" ]; then
               echo "Failed tests to rerun: $FAILED_TESTS"
               echo "Waiting 30 seconds before rerun..."

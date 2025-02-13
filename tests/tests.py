@@ -11,6 +11,7 @@ from pages.menu_pages.menu_tools import MenuTools
 from pages.sign_in_page import SignIn
 
 
+
 @pytest.mark.usefixtures('chrome')
 class Tests:
     def setup_method(self):
