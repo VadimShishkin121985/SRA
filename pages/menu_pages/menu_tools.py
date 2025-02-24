@@ -42,6 +42,7 @@ class MenuTools(BasePage):
         self.driver.get(self.URL)
         return self
 
+
     def move_mouse_to_tools(self):
         self.privacy_setting()
         menu_tools = self.driver.find_element(By.XPATH, '//a[@data-dropdown="tools"]')
