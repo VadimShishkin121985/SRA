@@ -20,11 +20,11 @@ class MenuCompany(BasePage):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
         self.driver: WebDriver = driver
-        self.contact_us_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="Contact us"]')
-        self.about_us_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="About us"]')
-        self.faqs_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon"][normalize-space()="FAQs"]')
+        self.contact_us_locator = (By.XPATH, '//div[@class="dropMenu__content drop-company__content js-drop-content"]//span[@class="dropMenu__text_icon"][normalize-space()="Contact us"]')
+        self.about_us_locator = (By.XPATH, '//div[@class="dropMenu__content drop-company__content js-drop-content"]//span[@class="dropMenu__text_icon"][normalize-space()="About us"]')
+        self.faqs_locator = (By.XPATH, '//div[@class="dropMenu__content drop-company__content js-drop-content"]//span[@class="dropMenu__text_icon"][normalize-space()="FAQs"]')
         self.blog_post_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list dropMenu__list_block dropMenu__list_footer dropMenu__list_max-width-full js-copy4"]//a[2]')
-        self.blog_page_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text dropMenu__text_icon dropMenu__text_uppercase"][normalize-space()="blog"]')
+        self.blog_page_locator = (By.XPATH, '//div[@class="dropMenu__content drop-company__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text_uppercase"][normalize-space()="Blog"]')
 
     def move_mouse_to_company(self):
         self.privacy_setting()

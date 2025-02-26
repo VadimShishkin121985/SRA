@@ -1,11 +1,11 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import tempfile
 import os
 import time
-
 
 @pytest.fixture
 def chrome(request):
@@ -24,7 +24,7 @@ def chrome(request):
 
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
+    #chrome_options.add_argument("--headless=new")
     chrome_options.add_argument(f"--user-data-dir={temp_dir}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -63,42 +63,27 @@ def chrome(request):
         'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
     })
 
-
-    # Создаем сервис с явным указанием пути к ChromeDriver
-    service = Service()
+    # Используем webdriver-manager для автоматического управления ChromeDriver
+    driver_path = ChromeDriverManager().install()
+    print(f"Using ChromeDriver at: {driver_path}")
+    service = ChromeService(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+    driver.set_page_load_timeout(30)
+    driver.implicitly_wait(20)
 
-    # Устанавливаем драйвер для класса теста
     if request.cls:
         request.cls.driver = driver
 
-    # Возвращаем драйвер
     yield driver
 
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
             driver.quit()
-            # Очищаем временную директорию
-            try:
-                import shutil
-                shutil.rmtree(temp_dir, ignore_errors=True)
-            except:
-                pass
+            import shutil
+            shutil.rmtree(temp_dir, ignore_errors=True)
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
 
-
-@pytest.fixture(scope='class')
-def firefox(request):
-    service = Service(GeckoDriverManager().install())
-    driver = webdriver.Firefox(service=service)
-    driver.set_page_load_timeout(30)
-    if request.cls:
-        request.cls.driver = driver
-    yield driver
-    driver.quit()
 
 
 def pytest_configure(config):

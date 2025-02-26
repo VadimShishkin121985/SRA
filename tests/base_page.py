@@ -1,3 +1,4 @@
+import random
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -34,3 +35,10 @@ class BasePage:
         wait.until(EC.element_to_be_clickable(deny_button))
         deny_button.click()
         time.sleep(2)  # Ждем после клика
+
+    def get_random_number_for_tracking(self):
+        tracking_number = ['CAAU5832492', 'TGBU4259356', 'SEGU7310413']
+        return random.choice(tracking_number)
+
+
+
