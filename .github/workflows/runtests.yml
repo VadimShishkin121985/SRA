@@ -311,7 +311,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
-          SRA_COMON_TELEGRAM_CHAT_ID: ${{ secret.SRA_COMON_TELEGRAM_CHAT_ID }}
+          SRA_COMON_TELEGRAM_CHAT_ID: ${{ secrets.SRA_COMON_TELEGRAM_CHAT_ID }}
 
 
       - name: Store generated report
