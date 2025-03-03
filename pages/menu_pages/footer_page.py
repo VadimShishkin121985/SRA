@@ -64,6 +64,7 @@ class MenuFooter(BasePage):
         assert element is not None, "Элемент не найден"
 
     def go_to_logistic_explorer_from_footer(self):
+        self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_le_locator).click()
         self.waiter_with_assert('#marketplace')
         self.driver.back()

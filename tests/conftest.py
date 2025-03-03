@@ -6,6 +6,8 @@ import tempfile
 import os
 import time
 
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 @pytest.fixture
 def chrome(request):
@@ -24,7 +26,7 @@ def chrome(request):
 
     # Настраиваем ChromeOptions
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
+    #chrome_options.add_argument("--headless=new")
     chrome_options.add_argument(f"--user-data-dir={temp_dir}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -67,10 +69,15 @@ def chrome(request):
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
 
-    # Инициализируем драйвер
+    service = webdriver.ChromeService(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+
+    # # Инициализируем драйвер работает для Github
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
+    # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
+    # driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
     # Устанавливаем драйвер для класса теста
     if request.cls:
