@@ -44,7 +44,7 @@ class MenuReferences(BasePage):
         self.truck_types_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Truck types"]')
 
     def move_mouse_to_references(self):
-        self.privacy_setting()
+        #self.privacy_setting()
         wait = WebDriverWait(self.driver, 50)
         menu_references = wait.until(EC.presence_of_element_located((By.XPATH, '//a[@data-dropdown="references"]')))
         wait.until(EC.visibility_of(menu_references))

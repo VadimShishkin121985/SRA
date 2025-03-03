@@ -33,8 +33,9 @@ class MainPage(BasePage):
         for _ in range(i):
             self.driver.switch_to.active_element.send_keys(Keys.SHIFT + Keys.TAB)
             time.sleep(2)
+
     def tracking_field_search_in_filter(self):
-        self.privacy_setting()
+        #self.privacy_setting()
         self.driver.refresh()
         time.sleep(2)
         self.tabulation(3)
@@ -47,27 +48,6 @@ class MainPage(BasePage):
 
 
 
-    def fill_tracking_field_in_filter_on_main_page(self):
-        track_number = 'CAAU5832492'
-        shadow_host = self.driver.find_element(By.ID, 'main-filter')
-        shadow_root = self.driver.execute_script('return arguments[0].shadowRoot', shadow_host)
-        input_field = shadow_root.find_element(By.CSS_SELECTOR, '.yAW1dd5veYN-0I1dWuR1p')
-        input_field.send_keys(track_number)
-        time.sleep(2)
-
-    def click_search_button(self):
-        shadow_host = self.driver.find_element(By.ID, 'main-filter')
-        shadow_root = self.driver.execute_script('return arguments[0].shadowRoot', shadow_host)
-        search_button = shadow_root.find_element(By.CSS_SELECTOR, '.Ye33ELP2gMIzctRlvgbjN')
-        time.sleep(5)
-        search_button.click()
-        shadow_host = self.driver.find_element(By.ID, 'tracking_system_root')
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'tracking_system_root')))
-        shadow_root = self.driver.execute_script('return arguments[0].shadowRoot', shadow_host)
-        route_on_the_map = WebDriverWait(shadow_root, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.leaflet-zoom-animated')))
-        time.sleep(3)
-        assert route_on_the_map.is_displayed(), "Элемент не найден на странице"
 
 
 
