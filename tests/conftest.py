@@ -86,6 +86,7 @@ def chrome(request):
 
     # Возвращаем драйвер
     yield driver
+    driver.quit()
 
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
