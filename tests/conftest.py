@@ -69,15 +69,16 @@ def chrome(request):
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
 
-    service = webdriver.ChromeService(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
-
-    # # Инициализируем драйвер работает для Github
+    #работа для ПК локально
+    # service = webdriver.ChromeService(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
     # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     # driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+
+    # # Инициализируем драйвер работает для Github
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
+    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
     # Устанавливаем драйвер для класса теста
     if request.cls:
