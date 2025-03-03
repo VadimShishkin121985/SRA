@@ -80,26 +80,35 @@ def chrome(request):
     driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
-    # Устанавливаем драйвер для класса теста
     if request.cls:
         request.cls.driver = driver
 
-    # Возвращаем драйвер
     yield driver
+
+    # Проверяем, упал ли тест
+    failed = request.node.config.cache.get(f"failed_{request.node.nodeid}", False)
+    if failed:
+        print("\n❌ Тест зафейлился, ждем 10 секунд перед закрытием браузера...")
+        time.sleep(10)
+
     driver.quit()
 
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
             driver.quit()
-            # Очищаем временную директорию
-            try:
-                import shutil
-                shutil.rmtree(temp_dir, ignore_errors=True)
-            except:
-                pass
+            import shutil
+            shutil.rmtree(temp_dir, ignore_errors=True)
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
 
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Сохраняем результат теста в кэше Pytest"""
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == "call" and report.failed:
+        item.config.cache.set(f"failed_{item.nodeid}", True)
 
 @pytest.fixture(scope='class')
 def firefox(request):
