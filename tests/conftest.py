@@ -6,8 +6,6 @@ import tempfile
 import os
 import time
 
-from webdriver_manager.chrome import ChromeDriverManager
-
 
 @pytest.fixture
 def chrome(request):
@@ -69,10 +67,10 @@ def chrome(request):
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
 
-    service = webdriver.ChromeService(ChromeDriverManager().install())
+    # Инициализируем драйвер
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
-    driver.implicitly_wait(40)  # Увеличиваем время ожидания элементов
+    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
+    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
     # Устанавливаем драйвер для класса теста
     if request.cls:
