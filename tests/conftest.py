@@ -40,6 +40,8 @@ def chrome(request):
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument("--enable-gpu-rasterization")
+    chrome_options.add_argument("--enable-webgl")
 
     # Отключаем Privacy Settings и другие уведомления
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
