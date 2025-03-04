@@ -70,6 +70,7 @@ def chrome(request):
     service = Service()
 
     #работа для ПК локально
+
     # service = webdriver.ChromeService(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
     # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
