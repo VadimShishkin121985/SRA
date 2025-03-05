@@ -6,6 +6,8 @@ import tempfile
 import os
 import time
 
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 @pytest.fixture
 def chrome(request):
@@ -73,8 +75,8 @@ def chrome(request):
 
     # service = webdriver.ChromeService(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
-    # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    # driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+    # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    # driver.implicitly_wait(40)  # Увеличиваем время ожидания элементов
 
     # Инициализируем драйвер работает для Github
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -100,6 +102,17 @@ def chrome(request):
                 pass
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # Получаем результат выполнения теста
+    outcome = yield
+    rep = outcome.get_result()
+
+    # Если тест зафейлился, добавляем задержку
+    if rep.when == "call" and rep.failed:
+        print(f"Test {item.name} failed. Waiting for 60 seconds before proceeding...")
+        time.sleep(60)
 
 
 def pytest_configure(config):
