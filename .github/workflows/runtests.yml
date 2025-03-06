@@ -93,12 +93,20 @@ jobs:
           python-version: "3.10"
 
       - name: Install Chrome
-        run: sudo apt-get install google-chrome-stable
+        run: |
+          sudo apt-get install google-chrome-stable
+          google-chrome --version  # Проверка версии установленного Chrome
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install webdriver-manager==4.0.1
+          pip list  # Вывод списка установленных зависимостей
+
+      - name: Check system processes
+        run: |
+          ps aux  # Вывод всех процессов на машине для проверки процессов Chrome
+          
 
       - name: Download history
         uses: actions/download-artifact@v4
