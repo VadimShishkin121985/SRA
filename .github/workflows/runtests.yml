@@ -43,7 +43,7 @@ jobs:
           &&
           curl -L 
           -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.PAT_GITHUB }}" 
+          -H "Authorization: Bearer ${{ secrets.PAT_GH }}" 
           -H "X-GitHub-Api-Version: 2022-11-28" 
           https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$ARTIFACT_ID/zip 
           -o artifacts.zip &&
@@ -55,7 +55,7 @@ jobs:
           &&
           curl -L 
           -H "Accept: application/vnd.github+json" 
-          -H "Authorization: Bearer ${{ secrets.PAT_GITHUB }}" 
+          -H "Authorization: Bearer ${{ secrets.PAT_GH }}" 
           -H "X-GitHub-Api-Version: 2022-11-28" 
           https://api.github.com/repos/VadimShishkin121985/SRA/actions/artifacts/$REPORT_ID/zip 
           -o pages.zip
@@ -110,7 +110,7 @@ jobs:
       - name: Run tests
         id: run_tests
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB}}  # Передаем токен как переменную окружения
+          GITHUB_TOKEN: ${{ secrets.PAT_GH}}  # Передаем токен как переменную окружения
         run: |
           mkdir -p allure-results
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
