@@ -109,6 +109,8 @@ jobs:
 
       - name: Run tests
         id: run_tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GH }}  # Передаем токен как переменную окружения
         run: |
           mkdir -p allure-results
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
@@ -124,55 +126,49 @@ jobs:
             elif [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
               TEST_FILE="tests/tests.py"
             fi
-            
+
             # Проверяем существование файла
             if [ ! -f "$TEST_FILE" ]; then
               echo "Error: Test file $TEST_FILE not found!"
               exit 1
             fi
-            
+
             # Запускаем выбранные тесты
             pytest $TEST_FILE --reruns=1 --reruns-delay=3 --disable-warnings -v \
               --alluredir=allure-results \
               --junitxml=allure-results/junit.xml || true
           fi
-          
+
           # Перезапуск упавших тестов
           if [ -f "allure-results/junit.xml" ]; then
             echo "Rerunning failed tests..."
-            # Определяем префикс для перезапуска на основе выбранного файла
             TEST_PREFIX="tests/test_menu.py"
             if [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
               TEST_PREFIX="tests/tests.py"
             fi
-            
-            # Получаем список упавших тестов более надежным способом
+
             FAILED_TESTS=$(xmllint --xpath "//testcase[failure or error]/@name" "allure-results/junit.xml" 2>/dev/null | \
               sed -E 's/name="([^"]+)"/\1/g' | tr ' ' '\n' | sed 's/^/${TEST_PREFIX}::/g')
+
             if [ ! -z "$FAILED_TESTS" ]; then
               echo "Failed tests to rerun: $FAILED_TESTS"
               echo "Waiting 30 seconds before rerun..."
-              sleep 30  # Даем время на освобождение ресурсов
-              
-              # Убиваем все процессы Chrome перед перезапуском
+              sleep 30
               pkill chrome || true
               pkill chromedriver || true
               sleep 5
-              
-              # Запускаем каждый тест отдельно с паузой
+
               for test in $FAILED_TESTS; do
                 echo "Rerunning test: $test"
-                # Очищаем кэш браузера перед каждым тестом
                 rm -rf /tmp/.com.google.Chrome* || true
                 rm -rf /tmp/.org.chromium.Chromium* || true
                 rm -rf ~/.cache/google-chrome || true
-                
+
                 pytest "$test" --disable-warnings -v \
                   --alluredir=allure-results/rerun \
                   --junitxml=allure-results/rerun_junit.xml || true
-                sleep 5  # Пауза между тестами
-                
-                # Убиваем процессы после каждого теста
+                sleep 5
+
                 pkill chrome || true
                 pkill chromedriver || true
                 sleep 2
@@ -180,7 +176,7 @@ jobs:
             fi
           fi
       - name: Store allure results
-        if: always()  # Выполнять даже если предыдущий шаг завершился с ошибкой
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ github.run_id }}
