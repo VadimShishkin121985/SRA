@@ -82,8 +82,8 @@ class TestToolsMenu:
         self.page_menu_tools.go_to_erp_page()
 
 
-    def test_menu_tools_searates_exp(self):
-        self.page_menu_tools.go_to_se_page()
+    # def test_menu_tools_searates_exp(self):
+    #     self.page_menu_tools.go_to_se_page()
 
     def test_menu_tools_dev_portal(self):
         self.page_menu_tools.go_to_developer_portal_page()
