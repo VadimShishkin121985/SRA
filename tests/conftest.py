@@ -111,8 +111,8 @@ def pytest_runtest_makereport(item, call):
 
     # Если тест зафейлился, добавляем задержку
     if rep.when == "call" and rep.failed:
-        print(f"Test {item.name} failed. Waiting for 700 seconds before proceeding...")
-        time.sleep(700)
+        print(f"Test {item.name} failed. Waiting for 800 seconds before proceeding...")
+        time.sleep(800)
 
 
 def pytest_configure(config):
