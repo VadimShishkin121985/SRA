@@ -35,48 +35,37 @@ def chrome(request):
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-infobars")
     chrome_options.add_argument("--disable-browser-side-navigation")
-    #chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--disable-notifications")
-    chrome_options.add_argument("--enable-gpu-rasterization")
-    chrome_options.add_argument("--enable-webgl")
 
-    # # Отключаем Privacy Settings и другие уведомления
-    # chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
-    # chrome_options.add_experimental_option('useAutomationExtension', False)
-    # chrome_options.add_experimental_option('prefs', {
-    #     'credentials_enable_service': False,
-    #     'profile.password_manager_enabled': False,
-    #     'profile.default_content_setting_values.notifications': 2,
-    #     'profile.default_content_settings.popups': 0,
-    #     'profile.default_content_setting_values.automatic_downloads': 1,
-    #     'profile.managed_default_content_settings.javascript': 1,
-    #     'profile.default_content_setting_values.cookies': 1,
-    #     'profile.managed_default_content_settings.cookies': 1,
-    #     'profile.default_content_setting_values.plugins': 1,
-    #     'profile.default_content_setting_values.geolocation': 2,
-    #     'profile.default_content_setting_values.media_stream': 2,
-    #     'profile.default_content_setting_values.images': 1,
-    #     'profile.default_content_setting_values.mixed_script': 1,
-    #     'profile.default_content_setting_values.mouselock': 2,
-    #     'profile.default_content_setting_values.protocol_handlers': 2,
-    #     'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
-    # })
+    # Отключаем Privacy Settings и другие уведомления
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    chrome_options.add_experimental_option('prefs', {
+        'credentials_enable_service': False,
+        'profile.password_manager_enabled': False,
+        'profile.default_content_setting_values.notifications': 2,
+        'profile.default_content_settings.popups': 0,
+        'profile.default_content_setting_values.automatic_downloads': 1,
+        'profile.managed_default_content_settings.javascript': 1,
+        'profile.default_content_setting_values.cookies': 1,
+        'profile.managed_default_content_settings.cookies': 1,
+        'profile.default_content_setting_values.plugins': 1,
+        'profile.default_content_setting_values.geolocation': 2,
+        'profile.default_content_setting_values.media_stream': 2,
+        'profile.default_content_setting_values.images': 1,
+        'profile.default_content_setting_values.mixed_script': 1,
+        'profile.default_content_setting_values.mouselock': 2,
+        'profile.default_content_setting_values.protocol_handlers': 2,
+        'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
+    })
 
 
     # Создаем сервис с явным указанием пути к ChromeDriver
     service = Service()
-
-    #работа для ПК локально
-
-    # service = webdriver.ChromeService(ChromeDriverManager().install())
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
-    # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
-    # driver.implicitly_wait(40)  # Увеличиваем время ожидания элементов
-
-    #Инициализируем драйвер работает для Github
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
@@ -87,7 +76,6 @@ def chrome(request):
 
     # Возвращаем драйвер
     yield driver
-    driver.quit()
 
     if scope == 'function' or (scope == 'class' and request.node.cls._class_cleanup):
         try:
@@ -101,16 +89,6 @@ def chrome(request):
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
 
-# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-# def pytest_runtest_makereport(item, call):
-#     # Получаем результат выполнения теста
-#     outcome = yield
-#     rep = outcome.get_result()
-#
-#     # Если тест зафейлился, добавляем задержку
-#     if rep.when == "call" and rep.failed:
-#         print(f"Test {item.name} failed. Waiting for 800 seconds before proceeding...")
-#         time.sleep(800)
 
 
 def pytest_configure(config):

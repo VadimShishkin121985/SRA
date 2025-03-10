@@ -4,7 +4,7 @@ on:
   schedule:
     # Запуск в 7:00 по Киеву (UTC+2)
     # Указываем 5:00 UTC, что соответствует 7:00 по Киеву
-    - cron: '0 2 * * *'
+    - cron: '0 5 * * *'
 
   workflow_dispatch:  # Добавляем возможность ручного запуска
     inputs:
@@ -93,20 +93,12 @@ jobs:
           python-version: "3.10"
 
       - name: Install Chrome
-        run: |
-          sudo apt-get install google-chrome-stable
-          google-chrome --version  # Проверка версии установленного Chrome
+        run: sudo apt-get install google-chrome-stable
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install webdriver-manager==4.0.1
-          pip list  # Вывод списка установленных зависимостей
-
-      - name: Check system processes
-        run: |
-          ps aux  # Вывод всех процессов на машине для проверки процессов Chrome
-          
 
       - name: Download history
         uses: actions/download-artifact@v4
@@ -318,7 +310,6 @@ jobs:
             -d parse_mode="Markdown"
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          #TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
           TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
 
       - name: Store generated report
