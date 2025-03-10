@@ -6,8 +6,6 @@ import tempfile
 import os
 import time
 
-from webdriver_manager.chrome import ChromeDriverManager
-
 
 @pytest.fixture
 def chrome(request):
@@ -45,27 +43,27 @@ def chrome(request):
     chrome_options.add_argument("--enable-gpu-rasterization")
     chrome_options.add_argument("--enable-webgl")
 
-    # Отключаем Privacy Settings и другие уведомления
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-    chrome_options.add_experimental_option('prefs', {
-        'credentials_enable_service': False,
-        'profile.password_manager_enabled': False,
-        'profile.default_content_setting_values.notifications': 2,
-        'profile.default_content_settings.popups': 0,
-        'profile.default_content_setting_values.automatic_downloads': 1,
-        'profile.managed_default_content_settings.javascript': 1,
-        'profile.default_content_setting_values.cookies': 1,
-        'profile.managed_default_content_settings.cookies': 1,
-        'profile.default_content_setting_values.plugins': 1,
-        'profile.default_content_setting_values.geolocation': 2,
-        'profile.default_content_setting_values.media_stream': 2,
-        'profile.default_content_setting_values.images': 1,
-        'profile.default_content_setting_values.mixed_script': 1,
-        'profile.default_content_setting_values.mouselock': 2,
-        'profile.default_content_setting_values.protocol_handlers': 2,
-        'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
-    })
+    # # Отключаем Privacy Settings и другие уведомления
+    # chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
+    # chrome_options.add_experimental_option('useAutomationExtension', False)
+    # chrome_options.add_experimental_option('prefs', {
+    #     'credentials_enable_service': False,
+    #     'profile.password_manager_enabled': False,
+    #     'profile.default_content_setting_values.notifications': 2,
+    #     'profile.default_content_settings.popups': 0,
+    #     'profile.default_content_setting_values.automatic_downloads': 1,
+    #     'profile.managed_default_content_settings.javascript': 1,
+    #     'profile.default_content_setting_values.cookies': 1,
+    #     'profile.managed_default_content_settings.cookies': 1,
+    #     'profile.default_content_setting_values.plugins': 1,
+    #     'profile.default_content_setting_values.geolocation': 2,
+    #     'profile.default_content_setting_values.media_stream': 2,
+    #     'profile.default_content_setting_values.images': 1,
+    #     'profile.default_content_setting_values.mixed_script': 1,
+    #     'profile.default_content_setting_values.mouselock': 2,
+    #     'profile.default_content_setting_values.protocol_handlers': 2,
+    #     'profile.content_settings.exceptions.automatic_downloads.*.setting': 1
+    # })
 
 
     # Создаем сервис с явным указанием пути к ChromeDriver
@@ -73,7 +71,7 @@ def chrome(request):
 
     #работа для ПК локально
 
-    service = webdriver.ChromeService(ChromeDriverManager().install())
+    # service = webdriver.ChromeService(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
     # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
     # driver.implicitly_wait(40)  # Увеличиваем время ожидания элементов
