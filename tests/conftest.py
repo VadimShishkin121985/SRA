@@ -66,10 +66,21 @@ def chrome(request):
 
 
     # Создаем сервис с явным указанием пути к ChromeDriver
-    service = Service(ChromeDriverManager().install())
+    driver_path = ChromeDriverManager().install()
+
+    # Проверяем, что путь указывает на исполняемый файл chromedriver
+    if not driver_path.endswith("chromedriver"):
+        chromedriver_dir = os.path.dirname(driver_path)
+        correct_path = os.path.join(chromedriver_dir, "chromedriver")
+        if os.path.exists(correct_path):
+            driver_path = correct_path
+
+    # Запускаем сервис с правильным путем
+    service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+
 
     # Устанавливаем драйвер для класса теста
     if request.cls:
