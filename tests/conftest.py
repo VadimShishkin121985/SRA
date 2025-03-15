@@ -68,18 +68,20 @@ def chrome(request):
     # Создаем сервис с явным указанием пути к ChromeDriver
     driver_path = ChromeDriverManager().install()
 
-    # Проверяем, что путь указывает на исполняемый файл chromedriver
-    if not driver_path.endswith("chromedriver"):
+    # Проверяем, что скачался не `THIRD_PARTY_NOTICES.chromedriver`
+    if "THIRD_PARTY_NOTICES" in driver_path or not driver_path.endswith("chromedriver"):
         chromedriver_dir = os.path.dirname(driver_path)
         correct_path = os.path.join(chromedriver_dir, "chromedriver")
         if os.path.exists(correct_path):
             driver_path = correct_path
+        else:
+            raise FileNotFoundError(f"Исполняемый chromedriver не найден в {chromedriver_dir}")
 
     # Запускаем сервис с правильным путем
     service = Service(driver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+    driver = webdriver.Chrome(service=service)
+    driver.set_page_load_timeout(30)
+    driver.implicitly_wait(20)
 
 
     # Устанавливаем драйвер для класса теста
