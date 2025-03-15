@@ -79,6 +79,7 @@ def chrome(request):
 
     # Запускаем сервис с правильным путем
     service = Service(driver_path)
+    os.chmod(driver_path, 0o755)
     driver = webdriver.Chrome(service=service)
     driver.set_page_load_timeout(30)
     driver.implicitly_wait(20)
