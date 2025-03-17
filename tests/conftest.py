@@ -6,7 +6,30 @@ from webdriver_manager.chrome import ChromeDriverManager
 import tempfile
 import os
 import time
+import socket
 
+# Функция для проверки соединения
+def check_connection(host, port):
+    try:
+        with socket.create_connection((host, port), timeout=5):
+            return True
+    except (socket.timeout, socket.error) as e:
+        return False
+
+# Фикстура для проверки соединения после каждого теста
+@pytest.fixture(scope="function", autouse=True)
+def check_connection_fixture(request):
+    host = "https://www.searates.com/"  # Заменить на нужный хост
+    port = 80  # Заменить на нужный порт
+
+    # Функция для вывода в консоль ошибки соединения
+    def report_connection_status():
+        connection_status = check_connection(host, port)
+        if not connection_status:
+            print(f"Ошибка соединения с {host}:{port}")
+
+    # Регистрация функции, которая будет выполнена после каждого теста
+    request.addfinalizer(report_connection_status)
 
 @pytest.fixture
 def chrome(request):
@@ -76,7 +99,6 @@ def chrome(request):
     # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
     # driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
 
-
     # Устанавливаем драйвер для класса теста
     if request.cls:
         request.cls.driver = driver
@@ -95,7 +117,6 @@ def chrome(request):
                 pass
         except Exception as e:
             print(f"Error closing browser: {str(e)}")
-
 
 
 def pytest_configure(config):
