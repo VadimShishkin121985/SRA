@@ -87,6 +87,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Проверка доступности хоста
+        run: curl -v https://api.github.com
+
+      - name: Проверка Searates
+        run: curl -v https://www.searates.com
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
