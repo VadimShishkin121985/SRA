@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuTools(BasePage):
     _instance = None
-    URL = 'https://www.searates.com/'
+    URL = 'https://release.searates.dev/'
 
     def __init__(self, driver: WebDriver):
         self.driver: WebDriver = driver
