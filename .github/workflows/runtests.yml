@@ -31,7 +31,7 @@ jobs:
       - name: setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.13.1"
 
       - name: Download artifacts
         run: >
@@ -87,16 +87,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Проверка доступности хоста
-        run: curl -v https://api.github.com
-
-      - name: Проверка Searates
-        run: curl -v https://www.searates.com
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.13.1"
 
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
