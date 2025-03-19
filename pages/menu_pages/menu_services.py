@@ -22,7 +22,7 @@ class MenuServices(BasePage):
         self.driver: WebDriver = driver
         self.menu_services_locator = (By.XPATH, '//a[@data-dropdown="services"]')
         self.request_a_quote_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__item__request__title"][normalize-space()="Request a quote"]')
-        self.all_shipping_leads_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text_icon"][normalize-space()="Active shipping leads"]')
+        self.all_shipping_leads_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Active shipping leads"]')
         self.logistics_services_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text_icon"][normalize-space()="Logistics services by country"]')
         self.carrier_forwarder_page_locator =(By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list_block drop-services__link dropMenu__list_flex-block dropMenu__link_max-width-276"]//a[2]//span[1]')
         self.importer_page_locator = (By.XPATH,'//div[@class="dropMenu"]//div[@class="dropMenu__list_block drop-services__link dropMenu__list_flex-block dropMenu__link_max-width-276"]//a[1]//span[1]')
