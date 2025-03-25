@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuFooter(BasePage):
     _instance = None
-    URL = 'https://www.searates.com/'
+    URL = 'https://release.searates.dev/'
 
     def open(self) -> 'MenuFooter':
         self.driver.get(self.URL)

@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuCompany(BasePage):
     _instance = None
-    URL = 'https://www.searates.com/'
+    URL = 'https://release.searates.dev/'
 
     def open(self) -> 'MenuCompany':
         self.driver.get(self.URL)

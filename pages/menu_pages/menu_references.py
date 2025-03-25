@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuReferences(BasePage):
     _instance = None
-    URL = 'https://www.searates.com/'
+    URL = 'https://release.searates.dev/'
 
     def open(self) -> 'MenuReferences':
         self.driver.get(self.URL)
