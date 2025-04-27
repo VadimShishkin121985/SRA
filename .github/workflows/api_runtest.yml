@@ -28,9 +28,9 @@ jobs:
 
     - name: Run API Tests
       run: |
-        set -e  # остановить выполнение при первой ошибке
         echo "Starting API tests..."
-        python api/dt_api.py
+        python api/dt_api.py || { echo "❌ Ошибка в API тестах"; exit 1; }
+        echo "✅ API тесты завершены"
 
     - name: Upload test results (optional)
       if: always()  # Всегда выполнять даже если тесты упали
