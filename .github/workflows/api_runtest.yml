@@ -1,6 +1,5 @@
 name: Automated API tests
 
-
 on:
   workflow_dispatch:
   push:
@@ -36,12 +35,18 @@ jobs:
       run: |
         echo "Create folder for tests..."
         mkdir -p ./api/test_results/
+        echo "🔹 Report placeholder" > ./api/test_results/report.txt
 
     - name: Run API Tests
       run: |
         echo "🏁 Run Api Test..."
-        python api/dt_api.py || { echo "❌ Error in API Tests"; exit 1; }
+        python api/dt_api.py || { 
+          echo "❌ Error in API Tests" 
+          echo "❌ API тесты упали" > ./api/test_results/report.txt
+          exit 1
+        }
         echo "✅ API test finished"
+        echo "✅ API тесты успешно пройдены" > ./api/test_results/report.txt
 
     - name: Save test report
       if: always()
@@ -65,5 +70,5 @@ jobs:
 
     - name: Show test report
       run: |
-        echo "📄create report"
-        cat ./api/test_results/*.txt || echo "⚠️ the file not found"
+        echo "📄 Show report content"
+        cat ./api/test_results/*.txt || echo "⚠️ Report file not found"
