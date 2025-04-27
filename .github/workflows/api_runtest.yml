@@ -2,7 +2,7 @@ name: Automated API tests
 
 
 on:
-  workflow_dispatch:  # Запуск вручную
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -27,24 +27,29 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Prepare test results folder
+      run: |
+        echo "Создаём папку для отчёта тестов..."
+        mkdir -p ./api/test_results/
+
     - name: Run API Tests
       run: |
-        echo "Starting API tests..."
+        echo "🏁 Запуск API тестов..."
         python api/dt_api.py || { echo "❌ Ошибка в API тестах"; exit 1; }
         echo "✅ API тесты завершены"
 
     - name: Save test report
-      if: always()  # Выполнить даже если тесты упали
+      if: always()  # сохраняем даже при падении тестов
       uses: actions/upload-artifact@v4
       with:
         name: api-test-report
-        path: ./api/test_results/  # Путь к папке с репортом (создать в dt_api.py)
+        path: ./api/test_results/
         retention-days: 7
 
   publish-report:
     name: Publish Test Report
     runs-on: ubuntu-latest
-    needs: api-test-job  # Выполняется ТОЛЬКО после завершения тестов
+    needs: api-test-job
 
     steps:
     - name: Download test report artifact
@@ -53,7 +58,7 @@ jobs:
         name: api-test-report
         path: ./downloaded_report/
 
-    - name: Publish report
+    - name: Show test report
       run: |
-        echo "📄 Тестовый отчёт:"
-        cat ./downloaded_report/report.txt || echo "⚠️ Отчёт не найден"
+        echo "📄 Содержимое тестового отчета:"
+        cat ./downloaded_report/*.txt || echo "⚠️ Файл отчета не найден"
