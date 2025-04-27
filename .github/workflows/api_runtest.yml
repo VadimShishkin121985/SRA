@@ -34,17 +34,17 @@ jobs:
 
     - name: Prepare test results folder
       run: |
-        echo "Создаём папку для отчёта тестов..."
+        echo "Create folder for tests..."
         mkdir -p ./api/test_results/
 
     - name: Run API Tests
       run: |
-        echo "🏁 Запуск API тестов..."
-        python api/dt_api.py || { echo "❌ Ошибка в API тестах"; exit 1; }
-        echo "✅ API тесты завершены"
+        echo "🏁 Run Api Test..."
+        python api/dt_api.py || { echo "❌ Error in API Tests"; exit 1; }
+        echo "✅ API test finished"
 
     - name: Save test report
-      if: always()  # сохраняем даже при падении тестов
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: api-test-report
@@ -61,9 +61,9 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: api-test-report
-        path: ./downloaded_report/
+        path: ./api/test_results/
 
     - name: Show test report
       run: |
-        echo "📄 Содержимое тестового отчета:"
-        cat ./downloaded_report/*.txt || echo "⚠️ Файл отчета не найден"
+        echo "📄create report"
+        cat ./api/test_results/*.txt || echo "⚠️ the file not found"
