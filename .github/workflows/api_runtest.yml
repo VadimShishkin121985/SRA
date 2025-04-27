@@ -28,4 +28,14 @@ jobs:
 
     - name: Run API Tests
       run: |
+        set -e  # остановить выполнение при первой ошибке
+        echo "Starting API tests..."
         python api/dt_api.py
+
+    - name: Upload test results (optional)
+      if: always()  # Всегда выполнять даже если тесты упали
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-test-logs
+        path: ./api/test_results/  # Путь к папке с логами/отчетами, если есть
+        retention-days: 7
