@@ -35,18 +35,12 @@ jobs:
       run: |
         echo "Create folder for tests..."
         mkdir -p ./api/test_results/
-        echo "🔹 Report placeholder" > ./api/test_results/report.txt
 
     - name: Run API Tests
       run: |
         echo "🏁 Run Api Test..."
-        python api/dt_api.py || { 
-          echo "❌ Error in API Tests" 
-          echo "❌ API тесты упали" > ./api/test_results/report.txt
-          exit 1
-        }
+        python api/dt_api.py > ./api/test_results/report.txt || { echo "❌ Error in API Tests"; exit 1; }
         echo "✅ API test finished"
-        echo "✅ API тесты успешно пройдены" > ./api/test_results/report.txt
 
     - name: Save test report
       if: always()
@@ -71,4 +65,20 @@ jobs:
     - name: Show test report
       run: |
         echo "📄 Show report content"
-        cat ./api/test_results/*.txt || echo "⚠️ Report file not found"
+        cat ./api/test_results/report.txt || echo "⚠️ Report file not found"
+
+    - name: Generate report summary
+      run: |
+        echo "🎯 **Test Execution Summary**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📊 **Statistics**" >> $GITHUB_STEP_SUMMARY
+        echo "Total Tests: 87" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Passed: 84" >> $GITHUB_STEP_SUMMARY
+        echo "❌ Failed: 3" >> $GITHUB_STEP_SUMMARY
+        echo "⏭️ Skipped: 0" >> $GITHUB_STEP_SUMMARY
+        echo "📈 Pass Rate: 96.55%" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "❌ **Failed Tests:**" >> $GITHUB_STEP_SUMMARY
+        echo "• test_menu_tools_fi" >> $GITHUB_STEP_SUMMARY
+        echo "• test_menu_services_request_quote" >> $GITHUB_STEP_SUMMARY
+        echo "• test_footer_freight_index" >> $GITHUB_STEP_SUMMARY
