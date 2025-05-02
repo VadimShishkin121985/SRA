@@ -37,10 +37,10 @@ jobs:
         echo "Create folder for tests..."
         mkdir -p ./api/test_results/
 
-    - name: Run API Tests
+    - name: Run API Tests and save output
       run: |
-        echo "🏁 Run API Test..."
-        pytest tests/api/ --tb=short --maxfail=10 -q > ./api/test_results/report.txt || true
+        echo "🏁 Run API Tests and save to report.txt..."
+        python -m pytest api/tests/ > ./api/test_results/report.txt || echo "❌ API Tests failed"
         echo "✅ API test finished"
 
     - name: Save test report
