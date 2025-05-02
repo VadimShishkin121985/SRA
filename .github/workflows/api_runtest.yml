@@ -46,9 +46,6 @@ jobs:
         pytest tests/api/ --tb=short -v | tee ./api/test_results/report.txt | grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)"
 
         echo "✅ API test run complete"
-    
-    
-    
 
     - name: Save test report
       if: always()
@@ -96,10 +93,10 @@ jobs:
           exit 0
         fi
 
-        TOTAL=$(echo "$STATS_LINE" | grep -oP '\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc)
-        PASSED=$(echo "$STATS_LINE" | grep -oP '\d+(?= passed)' || echo 0)
-        FAILED=$(echo "$STATS_LINE" | grep -oP '\d+(?= failed)' || echo 0)
-        SKIPPED=$(echo "$STATS_LINE" | grep -oP '\d+(?= skipped)' || echo 0)
+        TOTAL=$(echo "$STATS_LINE" | grep -oP '\\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc)
+        PASSED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= passed)' || echo 0)
+        FAILED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= failed)' || echo 0)
+        SKIPPED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= skipped)' || echo 0)
 
         if [ -z "$TOTAL" ] || [ "$TOTAL" -eq 0 ]; then
           PASS_RATE="0.00"
@@ -117,4 +114,44 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
 
         echo "❌ **Failed Tests:**" >> $GITHUB_STEP_SUMMARY
-        grep -E "FAILED\s+api/" ./api/test_results/report.txt | cut -d" " -f2 >> $GITHUB_STEP_SUMMARY || echo "✅ No failed tests" >> $GITHUB_STEP_SUMMARY
+        grep -E "FAILED\\s+api/" ./api/test_results/report.txt | cut -d" " -f2 >> $GITHUB_STEP_SUMMARY || echo "✅ No failed tests" >> $GITHUB_STEP_SUMMARY
+
+    - name: Send API test summary to Telegram
+      if: always()
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
+      run: |
+        echo "📤 Sending API test summary to Telegram..."
+
+        STATS_LINE=$(tail -n 10 ./api/test_results/report.txt | grep -E '==.* in .*s' || true)
+        TOTAL=$(echo "$STATS_LINE" | grep -oP '\\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc || echo 0)
+        PASSED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= passed)' || echo 0)
+        FAILED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= failed)' || echo 0)
+        SKIPPED=$(echo "$STATS_LINE" | grep -oP '\\d+(?= skipped)' || echo 0)
+
+        if [ "$TOTAL" -eq 0 ]; then
+          PASS_RATE="0.00"
+        else
+          PASS_RATE=$(awk "BEGIN {printf \"%.2f\", ($PASSED*100)/$TOTAL}")
+        fi
+
+        FAILED_TESTS=$(grep -E "FAILED\\s+tests/api/" ./api/test_results/report.txt | cut -d' ' -f1 || true)
+
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+        MESSAGE="\U0001F4E1 *API Test Summary*\n\n*Total:* $TOTAL\n✅ *Passed:* $PASSED\n❌ *Failed:* $FAILED\n⏭️ *Skipped:* $SKIPPED\n\U0001F4C8 *Pass Rate:* ${PASS_RATE}%%"
+
+        if [ -n "$FAILED_TESTS" ]; then
+          MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
+          while read -r test; do
+            MESSAGE="$MESSAGE\n- \`$test\`"
+          done <<< "$FAILED_TESTS"
+        fi
+
+        MESSAGE="$MESSAGE\n\n\U0001F517 [View Build Log]($BUILD_URL)"
+
+        curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
+          -d chat_id=$TELEGRAM_CHAT_SRA_ID \
+          -d parse_mode=Markdown \
+          --data-urlencode text="$MESSAGE"
