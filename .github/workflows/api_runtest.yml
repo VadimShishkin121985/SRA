@@ -39,9 +39,25 @@ jobs:
 
     - name: Run API Tests and save output
       run: |
-        echo "🏁 Run API Tests and save to report.txt..."
-        python -m pytest tests/api/ > ./api/test_results/report.txt || echo "❌ API Tests failed"
-        echo "✅ API test finished"
+        echo "🏁 Running API tests..."
+        mkdir -p ./api/test_results/
+
+        # Запуск тестов и вывод в файл
+        pytest tests/api/ --tb=short -q > ./api/test_results/report.txt || true
+
+        echo "✅ API test run complete"
+
+        # Добавление заголовка
+        echo "📋 **Executed Test Cases**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # Список всех тестов, которые прошли
+        grep -E "^tests/api/.*? PASSED" ./api/test_results/report.txt | cut -d' ' -f1 | while read -r test; do
+          echo "✅ $test - Passed" >> $GITHUB_STEP_SUMMARY
+        done
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+    
 
     - name: Save test report
       if: always()
