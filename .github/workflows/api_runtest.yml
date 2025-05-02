@@ -101,6 +101,7 @@ jobs:
         fi
 
         echo "📊 **Statistics**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
         echo "✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
         echo "❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
