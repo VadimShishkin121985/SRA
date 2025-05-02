@@ -120,7 +120,7 @@ jobs:
     - name: Send API test summary to Telegram
       run: |
         echo "📤 Sending API test summary to Telegram..."
-        
+
         STATS_LINE=$(tail -n 10 ./api/test_results/report.txt | grep -E '==.* in .*s' || true)
         TOTAL=$(echo "$STATS_LINE" | grep -oP '\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc || echo 0)
         PASSED=$(echo "$STATS_LINE" | grep -oP '\d+(?= passed)' || echo 0)
@@ -134,20 +134,20 @@ jobs:
         fi
 
         FAILED_TESTS=$(grep -E "FAILED\s+tests/api/" ./api/test_results/report.txt | cut -d' ' -f1 || true)
-        
+
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-        
+
         MESSAGE="📡 *API Test Summary*\n\n*Total:* $TOTAL\n✅ *Passed:* $PASSED\n❌ *Failed:* $FAILED\n⏭️ *Skipped:* $SKIPPED\n📈 *Pass Rate:* ${PASS_RATE}%"
-        
+
         if [ -n "$FAILED_TESTS" ]; then
           MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
           while read -r test; do
             MESSAGE="$MESSAGE\n- \`$test\`"
           done <<< "$FAILED_TESTS"
         fi
-        
+
         MESSAGE="$MESSAGE\n\n🔗 [View Build Log]($BUILD_URL)"
-        
+
         curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
           -d chat_id=$TELEGRAM_CHAT_SRA_ID \
           -d parse_mode=Markdown \
@@ -155,3 +155,4 @@ jobs:
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
+
