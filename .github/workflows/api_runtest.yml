@@ -73,18 +73,18 @@ jobs:
         echo "🎯 **Test Execution Summary**" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
-        STATS_LINE=$(tail -n 10 ./api/test_results/report.txt | grep -E '==.* in .*s')
+        STATS_LINE=$(tail -n 10 ./api/test_results/report.txt | grep -E '==.* in .*s' || true)
         echo "ℹ️ Found stats line: $STATS_LINE"
 
-        TOTAL=$(echo "$STATS_LINE" | grep -oP '\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc)
+        TOTAL=$(echo "$STATS_LINE" | grep -oP '\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc || echo 0)
         PASSED=$(echo "$STATS_LINE" | grep -oP '\d+(?= passed)' || echo 0)
         FAILED=$(echo "$STATS_LINE" | grep -oP '\d+(?= failed)' || echo 0)
         SKIPPED=$(echo "$STATS_LINE" | grep -oP '\d+(?= skipped)' || echo 0)
 
         if [ "$TOTAL" -eq 0 ]; then
-          PASS_RATE=0
+          PASS_RATE="0.00"
         else
-          PASS_RATE=$(echo "scale=2; ($PASSED*100)/$TOTAL" | bc)
+          PASS_RATE=$(awk "BEGIN {printf \"%.2f\", ($PASSED*100)/$TOTAL}")
         fi
 
         echo "📊 **Statistics**" >> $GITHUB_STEP_SUMMARY
@@ -96,5 +96,4 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
 
         echo "❌ **Failed Tests:**" >> $GITHUB_STEP_SUMMARY
-        grep -E "FAILED\s+api/" ./api/test_results/report.txt | cut -d" " -f2 || echo "✅ No failed tests"
-
+        grep -E "FAILED\s+api/" ./api/test_results/report.txt | cut -d" " -f2 || echo "✅ No failed tests" >> $GITHUB_STEP_SUMMARY
