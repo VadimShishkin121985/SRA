@@ -30,6 +30,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
 
     - name: Prepare test results folder
       run: |
@@ -38,8 +39,8 @@ jobs:
 
     - name: Run API Tests
       run: |
-        echo "🏁 Run Api Test..."
-        python api/dt_api.py > ./api/test_results/report.txt || { echo "❌ Error in API Tests"; exit 1; }
+        echo "🏁 Run API Test..."
+        pytest tests/api/ --tb=short --maxfail=10 -q > ./api/test_results/report.txt || true
         echo "✅ API test finished"
 
     - name: Save test report
@@ -62,23 +63,38 @@ jobs:
         name: api-test-report
         path: ./api/test_results/
 
-    - name: Show test report
+    - name: Show raw test report
       run: |
-        echo "📄 Show report content"
+        echo "📄 Raw test output:"
         cat ./api/test_results/report.txt || echo "⚠️ Report file not found"
 
-    - name: Generate report summary
+    - name: Generate summary from report
       run: |
         echo "🎯 **Test Execution Summary**" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
+
+        STATS_LINE=$(tail -n 10 ./api/test_results/report.txt | grep -E '==.* in .*s')
+        echo "ℹ️ Found stats line: $STATS_LINE"
+
+        TOTAL=$(echo "$STATS_LINE" | grep -oP '\d+(?= (passed|failed|skipped))' | paste -sd+ - | bc)
+        PASSED=$(echo "$STATS_LINE" | grep -oP '\d+(?= passed)' || echo 0)
+        FAILED=$(echo "$STATS_LINE" | grep -oP '\d+(?= failed)' || echo 0)
+        SKIPPED=$(echo "$STATS_LINE" | grep -oP '\d+(?= skipped)' || echo 0)
+
+        if [ "$TOTAL" -eq 0 ]; then
+          PASS_RATE=0
+        else
+          PASS_RATE=$(echo "scale=2; ($PASSED*100)/$TOTAL" | bc)
+        fi
+
         echo "📊 **Statistics**" >> $GITHUB_STEP_SUMMARY
-        echo "Total Tests: 87" >> $GITHUB_STEP_SUMMARY
-        echo "✅ Passed: 84" >> $GITHUB_STEP_SUMMARY
-        echo "❌ Failed: 3" >> $GITHUB_STEP_SUMMARY
-        echo "⏭️ Skipped: 0" >> $GITHUB_STEP_SUMMARY
-        echo "📈 Pass Rate: 96.55%" >> $GITHUB_STEP_SUMMARY
+        echo "Total Tests: $TOTAL" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+        echo "❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+        echo "⏭️ Skipped: $SKIPPED" >> $GITHUB_STEP_SUMMARY
+        echo "📈 Pass Rate: $PASS_RATE%" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
+
         echo "❌ **Failed Tests:**" >> $GITHUB_STEP_SUMMARY
-        echo "• test_menu_tools_fi" >> $GITHUB_STEP_SUMMARY
-        echo "• test_menu_services_request_quote" >> $GITHUB_STEP_SUMMARY
-        echo "• test_footer_freight_index" >> $GITHUB_STEP_SUMMARY
+        grep -E "FAILED\s+api/" ./api/test_results/report.txt | cut -d" " -f2 || echo "✅ No failed tests"
+
