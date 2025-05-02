@@ -42,21 +42,19 @@ jobs:
         echo "🏁 Running API tests..."
         mkdir -p ./api/test_results/
 
-        # Запуск тестов и вывод в файл
-        pytest tests/api/ --tb=short -q > ./api/test_results/report.txt || true
+        # Подробный вывод сохраняется для дальнейшей статистики
+        pytest tests/api/ --tb=short -v > ./api/test_results/report.txt || true
 
         echo "✅ API test run complete"
 
-        # Добавление заголовка
         echo "📋 **Executed Test Cases**" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
-        # Список всех тестов, которые прошли
-        grep -E "^tests/api/.*? PASSED" ./api/test_results/report.txt | cut -d' ' -f1 | while read -r test; do
-          echo "✅ $test - Passed" >> $GITHUB_STEP_SUMMARY
-        done
+        # Добавляем прошедшие тесты
+        grep -E "PASSED\s+\[.*\]" ./api/test_results/report.txt | awk '{print "✅ " $1 " - Passed"}' >> $GITHUB_STEP_SUMMARY || echo "⚠️ No passed tests found"
 
         echo "" >> $GITHUB_STEP_SUMMARY
+    
     
 
     - name: Save test report
