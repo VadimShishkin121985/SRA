@@ -137,7 +137,12 @@ jobs:
 
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-        MESSAGE="📡 *API Test Summary*\n\n*Total:* $TOTAL\n✅ *Passed:* $PASSED\n❌ *Failed:* $FAILED\n⏭️ *Skipped:* $SKIPPED\n📈 *Pass Rate:* ${PASS_RATE}%"
+        MESSAGE="📡 *API Test Summary*
+        *Total:* $TOTAL
+        ✅ *Passed:* $PASSED
+        ❌ *Failed:* $FAILED
+        ⏭️ *Skipped:* $SKIPPED
+        📈 *Pass Rate:* ${PASS_RATE}%"
 
         if [ -n "$FAILED_TESTS" ]; then
           MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
