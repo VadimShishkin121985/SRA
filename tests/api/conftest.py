@@ -1,7 +1,5 @@
 import pytest
 
-
-
 @pytest.fixture
 def api_client():
     """Универсальная фабрика API-клиентов."""
