@@ -47,7 +47,7 @@ jobs:
 
         echo "✅ API test run complete"
       env:
-        DT_API_KEY: ${{ secrets.MY_API_KEY }}
+        MY_API_KEY: ${{ secrets.MY_API_KEY }}
     
 
     - name: Save test report
