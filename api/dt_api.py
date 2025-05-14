@@ -10,7 +10,7 @@ class DtApi:
     def __init__(self, base_url: str = "https://distanceandtime.searates.com/v3/api"):
         self.api_key = os.getenv("MY_API_KEY")  # Загружаем ключ из .env или GitHub Secrets
         if not self.api_key:
-            raise ValueError("API key not found. Please set MY_API_KEY in .env or GitHub secrets.")
+            raise ValueError("API key not found. Please set MY_API_KEY in .env or GitHub  secrets.")
         self.base_url = base_url
 
     def get_distance(self, from_city: str, to_city: str, transport_mode: str):
