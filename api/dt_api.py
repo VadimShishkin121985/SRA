@@ -6,8 +6,6 @@ load_dotenv()  # Безопасно, даже если .env нет — для л
 class DtApi:
     def __init__(self, api_key=None, base_url="https://distanceandtime.searates.com/v3/api"):
         self.api_key = api_key or os.getenv("MY_API_KEY")
-        if not self.api_key:
-            raise ValueError("API key is missing. Check .env or environment.")
         self.base_url = base_url
 
     def get_distance(self, from_city: str, to_city: str, transport_mode: str):
