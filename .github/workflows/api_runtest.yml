@@ -1,6 +1,11 @@
 name: Automated API tests
 
 on:
+
+  schedule:
+    # Указать 6:00 UTC, - 8:00 по Киеву
+    - cron: '0 8 * * *'
+
   workflow_dispatch:
   push:
     branches:
@@ -41,8 +46,6 @@ jobs:
       run: |
         echo "🏁 Running API tests..."
         mkdir -p ./api/test_results/
-
-        # Запуск pytest, запись в файл и вывод только строк выполнения тестов
         pytest tests/api/ --tb=short -v | tee ./api/test_results/report.txt | grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)"
 
         echo "✅ API test run complete"
