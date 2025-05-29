@@ -1,4 +1,5 @@
 from api.dt_api import DtApi
+from api.ct_api import CTApi
 import pytest
 
 @pytest.mark.usefixtures("api_client")
@@ -44,4 +45,12 @@ class TestApi():
         data = response.json()
         assert response.status_code == 200
         assert data.get("success") is True, "API response 'success' is not True"
+
+    def test_get_container_number_info(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_tracking_by_any_number(number="TEMU1669697", type="CT", force_update=False, route=False, ais=False)
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
 
