@@ -60,3 +60,9 @@ class TestApi():
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
 
+    def test_get_bk_info(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_tracking_by_any_number(number="1811X023PE02032T1", type="BK", force_update=False, route=False, ais=False)
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
