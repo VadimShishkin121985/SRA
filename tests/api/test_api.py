@@ -66,3 +66,75 @@ class TestApi():
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_route_information_by_cn(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_route_information_by_any_number(number="DFSU6314506", type="CT", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_route_information_by_bl(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_route_information_by_any_number(number="ONEYOS3NA1705500", type="BL", sealine="ONEY")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_route_information_by_bk(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_route_information_by_any_number(number="EBKG06983286", type="BK", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_shipping_line_info(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_shipping_line_info()
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_cn(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data(number="DFSU6314506", type="CT", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_bl(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data(number="ONEYOS3NA1705500", type="BL", sealine="ONEY")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_bk(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data(number="EBKG06983286", type="BK", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_id_ct(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data_id(id=436182293, number="DFSU6314506", type="CT", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_id_bl(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data_id(id=436182293, number="ONEYOS3NA1705500", type="BL", sealine="ONEY")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_get_historical_data_id_bk(self, api_client):
+        tracking_api = api_client(CTApi)
+        response = tracking_api.get_historical_data_id(id=436182293, number="EBKG06983286", type="BK", sealine="MSCU")
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
+
+
