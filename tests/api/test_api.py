@@ -69,21 +69,21 @@ class TestApi():
 
     def test_route_information_by_cn(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="DFSU6314506", type="CT", sealine="MSCU")
+        response = tracking_api.get_route_information_by_any_number(number="MSNU9731198", type="CT", sealine="MSCU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
 
     def test_route_information_by_bl(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="ONEYOS3NA1705500", type="BL", sealine="ONEY")
+        response = tracking_api.get_route_information_by_any_number(number="TAOE88677600", type="BL", sealine="HDMU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
 
     def test_route_information_by_bk(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="EBKG06983286", type="BK", sealine="MSCU")
+        response = tracking_api.get_route_information_by_any_number(number="EBKG12536788", type="BK", sealine="MSCU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
