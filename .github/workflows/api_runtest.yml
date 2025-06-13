@@ -2,7 +2,7 @@ name: Automated API tests
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 08:00 UTC = 11:00 по Киеву
+    - cron: '0 6 * * *'
   workflow_dispatch:
   push:
     branches:
