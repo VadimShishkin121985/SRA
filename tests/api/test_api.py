@@ -83,7 +83,7 @@ class TestApi():
 
     def test_route_information_by_bk(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="EBKG12536788", type="BK", sealine="MSCU")
+        response = tracking_api.get_route_information_by_any_number(number="TAOF91227201", type="BK", sealine="HDMU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
