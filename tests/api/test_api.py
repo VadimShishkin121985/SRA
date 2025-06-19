@@ -1,3 +1,4 @@
+from api.at_api import ATApi
 from api.dt_api import DtApi
 from api.ct_api import CTApi
 import pytest
@@ -48,7 +49,7 @@ class TestApi():
 
     def test_get_container_number_info(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_tracking_by_any_number(number="TEMU1669697", type="CT", force_update=False, route=False, ais=False)
+        response = tracking_api.get_tracking_by_any_number(number="LYGU3109868", type="CT", force_update=False, route=False, ais=False)
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
@@ -137,4 +138,9 @@ class TestApi():
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
 
-
+    def test_get_at_awb(self, api_client):
+        air_tracking_api = api_client(ATApi)
+        response = air_tracking_api.get_air_tracking_awb(number="157-89685002", path=True )
+        data = response.json()
+        assert response.status_code == 200
+        assert data["status_code"] != "error", f"Unexpected error: {data.get('message')}"
