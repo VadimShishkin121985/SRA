@@ -26,7 +26,7 @@ class TestApi():
 
     def test_get_air_distance(self, api_client):
         distance_api = api_client(DtApi)
-        response = distance_api.get_distance(from_city="istandul", to_city="kiev", transport_mode='air')
+        response = distance_api.get_distance(from_city="istandul", to_city="kiev", transport_mode='air, road')
         data = response.json()
         assert response.status_code == 200
         assert data.get("success") is True, "API response 'success' is not True"
