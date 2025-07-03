@@ -48,6 +48,11 @@ jobs:
         echo "✅ API test run complete"
       env:
         MY_API_KEY: ${{ secrets.MY_API_KEY }}
+
+    - name: Show API responses
+      run: |
+        echo "🧾 API responses:"
+        cat api_output.log    
     
 
     - name: Save test report
