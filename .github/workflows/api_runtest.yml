@@ -44,8 +44,14 @@ jobs:
         echo "🏁 Running API tests..."
         mkdir -p ./api/test_results/
 
-        # Объединяем stdout и stderr, записываем сразу в два файла
-        pytest tests/api/ --tb=short -v 2>&1 | tee ./api/test_results/report.txt | tee ./api/test_results/api_output.log | grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)"
+        # 1. Объединяем stdout + stderr, сохраняем в один лог
+        pytest tests/api/ --tb=short -v 2>&1 | tee ./api/test_results/report.txt
+
+        # 2. Копируем тот же лог как "API output"
+        cp ./api/test_results/report.txt ./api/test_results/api_output.log
+
+        # 3. Печатаем краткий итог
+        grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)" ./api/test_results/report.txt || true
 
         echo "✅ API test run complete"
       env:
@@ -55,6 +61,8 @@ jobs:
       run: |
         echo "🧾 API responses:"
         grep -A 5 -E "Response status|Response body|Query" ./api/test_results/api_output.log || echo "⚠️ No API log found"
+        
+
     
 
     - name: Save test report
