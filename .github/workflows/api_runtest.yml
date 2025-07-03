@@ -43,7 +43,9 @@ jobs:
       run: |
         echo "🏁 Running API tests..."
         mkdir -p ./api/test_results/
-        pytest tests/api/ --tb=short -v | tee ./api/test_results/report.txt | grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)"
+
+        # Объединяем stdout и stderr, записываем сразу в два файла
+        pytest tests/api/ --tb=short -v 2>&1 | tee ./api/test_results/report.txt | tee ./api/test_results/api_output.log | grep -E "tests/api/.* (PASSED|FAILED|SKIPPED)"
 
         echo "✅ API test run complete"
       env:
