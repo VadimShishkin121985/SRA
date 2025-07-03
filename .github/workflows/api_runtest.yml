@@ -56,6 +56,7 @@ jobs:
         echo "✅ API test run complete"
       env:
         MY_API_KEY: ${{ secrets.MY_API_KEY }}
+        AI_ID_NUMBER: ${{ secrets.AI_ID_NUMBER }}
 
     - name: Show API responses
       run: |
