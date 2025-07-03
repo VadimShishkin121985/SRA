@@ -52,7 +52,7 @@ jobs:
     - name: Show API responses
       run: |
         echo "🧾 API responses:"
-        cat api_output.log    
+        cat ./api/test_results/api_output.log || echo "⚠️ No API log found"
     
 
     - name: Save test report
