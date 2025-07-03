@@ -60,7 +60,7 @@ jobs:
     - name: Show API responses
       run: |
         echo "🧾 API responses:"
-        grep -A 10 -E "Query|Payload|Response status|Response body" ./api/test_results/api_output.log
+        grep -A 5 -E "Response status|Response body|Query" ./api/test_results/api_output.log || echo "⚠️ No API log found"
         
 
     
