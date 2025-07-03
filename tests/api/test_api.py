@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from api.ai_api import AIApi
 from api.at_api import ATApi
 from api.dt_api import DtApi
 from api.ct_api import CTApi
@@ -306,4 +307,76 @@ class TestApi():
         data = response.json()
         assert response.status_code == 200
         assert data["status_code"] != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_1_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="What is SeaRates?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_2_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="How does SeaRates work?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_3_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="Who is a DFA member?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_4_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="Who is a carrier?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_5_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="Who is a vendor?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_6_default_question(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="Who is a shipper?")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_le_questions_sea(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="rate 20 container from new york to washington by sea")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_le_questions_air(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="rate 200 kg from new york to washington by air")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_le_questions_land(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="rate 200 kg from new york to washington by land")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_ai_send_query_ct_by_cn_query(self, api_client):
+        ai_api = api_client(AIApi)
+        response = ai_api.post_ai_query(query="find my container CSNU6393245")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+
 
