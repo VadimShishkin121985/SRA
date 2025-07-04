@@ -151,7 +151,8 @@ jobs:
           PASS_RATE=$(awk "BEGIN {printf \"%.2f\", ($PASSED*100)/$TOTAL}")
         fi
 
-        FAILED_TESTS=$(grep -E "FAILED\s+tests/api/" ./api/test_results/report.txt | cut -d' ' -f1 || true)
+        # 🧩 Вот тут фикс:
+        FAILED_TESTS=$(grep -E "tests/api/.* FAILED" ./api/test_results/report.txt | cut -d' ' -f1 || true)
 
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
@@ -161,20 +162,20 @@ jobs:
         ❌ *Failed:* $FAILED
         ⏭️ *Skipped:* $SKIPPED
         📈 *Pass Rate:* ${PASS_RATE}%"
-
+        
         if [ -n "$FAILED_TESTS" ]; then
-          MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
-          while read -r test; do
-            MESSAGE="$MESSAGE\n- \`$test\`"
-          done <<< "$FAILED_TESTS"
+        MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
+        while read -r test; do
+        MESSAGE="$MESSAGE\n- \`$test\`"
+        done <<< "$FAILED_TESTS"
         fi
-
+        
         MESSAGE="$MESSAGE\n\n🔗 [View Build Log]($BUILD_URL)"
-
+        
         curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
-          -d chat_id=$TELEGRAM_CHAT_SRA_ID \
-          -d parse_mode=Markdown \
-          --data-urlencode text="$MESSAGE"
+        -d chat_id=$TELEGRAM_CHAT_SRA_ID \
+        -d parse_mode=Markdown \
+        --data-urlencode text="$MESSAGE"
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
