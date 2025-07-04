@@ -150,9 +150,7 @@ jobs:
         else
           PASS_RATE=$(awk "BEGIN {printf \"%.2f\", ($PASSED*100)/$TOTAL}")
         fi
-
-        # 🧩 Вот тут фикс:
-        FAILED_TESTS=$(grep -E "tests/api/.* FAILED" ./api/test_results/report.txt | cut -d' ' -f1 || true)
+          FAILED_TESTS=$(grep -E "tests/api/.* FAILED" ./api/test_results/report.txt | cut -d':' -f4 || true)
 
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
