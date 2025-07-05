@@ -164,11 +164,17 @@ jobs:
         📈 *Pass Rate:* ${PASS_RATE}%"
         
         if [ -n "$FAILED_TESTS" ]; then
-        MESSAGE="$MESSAGE\n\n❌ *Failed Tests:*"
-        while IFS= read -r test; do
-          MESSAGE="${MESSAGE}\n- \`${test}\`"
-        done <<< "$FAILED_TESTS"
+        MESSAGE="${MESSAGE}
+        ❌ Failed Tests:"
+          while IFS= read -r test; do
+            MESSAGE="${MESSAGE}
+        - \`${test}\`"
+          done <<< "$FAILED_TESTS"
         fi
+        
+        MESSAGE="${MESSAGE}
+        
+        🔗 [View Build Log](${BUILD_URL})"
         
         curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage \
         -d chat_id=$TELEGRAM_CHAT_SRA_ID \
