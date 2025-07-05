@@ -152,7 +152,7 @@ jobs:
         fi
 
         # 🧩 Вот тут фикс:
-        FAILED_TESTS=$(grep -E "tests/api/.* FAILED" ./api/test_results/report.txt | cut -d' ' -f1 || true)
+        FAILED_TESTS=$(grep -E "tests/api/.*::.* FAILED" ./api/test_results/report.txt | sed -nE 's/.*::(test_[^ ]+).*/\1/p' || true)
 
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
