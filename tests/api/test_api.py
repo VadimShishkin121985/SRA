@@ -352,14 +352,14 @@ class TestApi():
 
     def test_ai_send_query_le_questions_sea(self, api_client):
         ai_api = api_client(AIApi)
-        response = ai_api.post_ai_query(query="rate 20 container from new york to washington by sea")
+        response = ai_api.post_ai_query(query="rate 20ft container from new york to washington by sea")
         data = response.json()
         assert response.status_code == 200
         assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
 
     def test_ai_send_query_le_questions_air(self, api_client):
         ai_api = api_client(AIApi)
-        response = ai_api.post_ai_query(query="rate 200 kg from new york to washington by air")
+        response = ai_api.post_ai_query(query="rate 2000 kg from new york to washington by air")
         data = response.json()
         assert response.status_code == 200
         assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
