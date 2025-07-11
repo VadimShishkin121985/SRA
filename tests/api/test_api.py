@@ -6,7 +6,9 @@ from api.dt_api import DtApi
 from api.ct_api import CTApi
 import pytest
 
+from api.parcel_api import ParcelApi
 from api.ss_api import SSApi
+
 
 
 @pytest.mark.usefixtures("api_client")
@@ -374,6 +376,27 @@ class TestApi():
     def test_ai_send_query_ct_by_cn_query(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="find my container CSNU6393245")
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_parce_from_joom(self, api_client):
+        parcel_api = api_client(ParcelApi)
+        response = parcel_api.get_parcel_info( number="JM000000001327778NPG", carrier_code="JOOM", path= True)
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_parce_from_cnao(self, api_client):
+        parcel_api = api_client(ParcelApi)
+        response = parcel_api.get_parcel_info( number="AENM0021834400", carrier_code="CNAO", path= False)
+        data = response.json()
+        assert response.status_code == 200
+        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+
+    def test_parce_company_info(self, api_client):
+        parcel_api = api_client(ParcelApi)
+        response = parcel_api.get_parcel_companie_info()
         data = response.json()
         assert response.status_code == 200
         assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
