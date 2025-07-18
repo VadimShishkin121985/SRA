@@ -6,6 +6,7 @@ from api.dt_api import DtApi
 from api.ct_api import CTApi
 import pytest
 
+from api.le_api import LEApi
 from api.parcel_api import ParcelApi
 from api.ss_api import SSApi
 
@@ -401,5 +402,213 @@ class TestApi():
         assert response.status_code == 200
         assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
 
+    def test_le_rates_istanbul_singapore_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [41.006785795504, 28.973221911993],
+            "coordinatesTo": [1.2392074109743487, 103.83246063045297],
+            "date": from_date,
+            "container": "ST20"
+        }
 
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_rates_london_singapore_d2d_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": True,
+            "portToFees": True,
+            "shippingType": "FCL",
+            "coordinatesFrom": [51.5073359, -0.12765],
+            "coordinatesTo": [1.2392074109743487, 103.83246063045297],
+            "date": from_date,
+            "container": "ST40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_rates_jebelAli_mumbai_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": True,
+            "shippingType": "FCL",
+            "coordinatesFrom": [25.019493486397167, 55.051802823544676],
+            "coordinatesTo": [19.046656981761096, 72.83729440336688],
+            "date": from_date,
+            "container": "HC40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_rates_dubai_tokyo_d2d_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "d2d",
+            "portFromFees": True,
+            "portToFees": True,
+            "shippingType": "FCL",
+            "coordinatesFrom": [25.2048493, 55.2707828],
+            "coordinatesTo": [35.64916150488439, 139.79156928968337],
+            "date": from_date,
+            "container": "HC40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_newyork_shnghai_d2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "d2p",
+            "portFromFees": True,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [40.7127281, -74.0060152],
+            "coordinatesTo": [31.400090576936, 121.49711250348],
+            "date": from_date,
+            "container": "ST20"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_tokyo_sydney_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [35.64916150488439, 139.79156928968337],
+            "coordinatesTo": [-33.8696440161399, 151.182861328125],
+            "date": from_date,
+            "container": "HC40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_yokohama_rotterdam_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [35.45755079300344, 139.6345159199081],
+            "coordinatesTo": [51.9043833521111, 4.442446816843265],
+            "date": from_date,
+            "container": "ST20"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_pusan_hamburg_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [35.098203098396, 129.03579703711],
+            "coordinatesTo": [53.547720036227, 9.969406438026787],
+            "date": from_date,
+            "container": "ST40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_shanghai_manzanillo_d2d_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "d2d",
+            "portFromFees": True,
+            "portToFees": True,
+            "shippingType": "FCL",
+            "coordinatesFrom": [31.400090576936, 121.49711250348],
+            "coordinatesTo": [19.103448203448, -104.40307617188],
+            "date": from_date,
+            "container": "ST20"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
+
+    def test_le_lehavre_sohar_p2p_fcl(self, api_client):
+        api = LEApi()
+        from_date = datetime.now().strftime('%Y-%m-%d')
+        variables = {
+            "includedServices": "p2p",
+            "portFromFees": False,
+            "portToFees": False,
+            "shippingType": "FCL",
+            "coordinatesFrom": [49.485997674824, 0.10705362955764],
+            "coordinatesTo": [24.333333333333, 56.75],
+            "date": from_date,
+            "container": "ST40"
+        }
+
+        response = api.get_rates(variables)
+        assert response.status_code == 200
+        data = response.json()
+        rates = data["data"]["rates"]
+        for i, rate in enumerate(rates):
+            assert rate.get("general"), f"❌ general empty or missed {i}"
 
