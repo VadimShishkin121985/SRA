@@ -9,8 +9,9 @@ load_dotenv()
 
 
 class AIApi(BaseApi):
-    def __init__(self, ai_id_number=None, base_url="https://ai-api.searates.com", **kwargs):
+    def __init__(self, ai_id_number=None, api_key=None, base_url="https://ai-api.searates.com", **kwargs):
         self.ai_id_number = ai_id_number or os.getenv("AI_ID_NUMBER")
+        self.api_key = api_key or os.getenv("MY_API_KEY")
         self.base_url = base_url.rstrip("/")
 
     def post_ai_query(self, query: str):
@@ -22,8 +23,10 @@ class AIApi(BaseApi):
 
         headers = {
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-API-KEY": self.api_key  # Добавлен API-ключ
         }
+
         response = requests.post(url, headers=headers, json=payload)
         self.print_response(response)
         return response
