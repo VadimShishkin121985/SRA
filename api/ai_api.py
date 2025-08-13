@@ -24,9 +24,13 @@ class AIApi(BaseApi):
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "X-API-KEY": self.api_key  # Добавлен API-ключ
+            #"X-API-KEY": self.api_key  # Добавлен API-ключ
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        params = {
+            "api_key": self.api_key,
+        }
+
+        response = requests.post(url, params=params, headers=headers, json=payload)
         self.print_response(response)
         return response
