@@ -24,7 +24,7 @@ class AIApi(BaseApi):
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            #"X-API-KEY": self.api_key  # Добавлен API-ключ
+
         }
 
         params = {
