@@ -314,72 +314,72 @@ class TestApi():
     def test_ai_send_query_1_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="What is SeaRates?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_2_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="How does SeaRates work?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_3_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a DFA member?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_4_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a carrier?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_5_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a vendor?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_6_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a shipper?")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_le_questions_sea(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 20ft container from new york to washington by sea")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_le_questions_air(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 2000 kg from new york to washington by air")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_le_questions_land(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 200 kg from new york to washington by land")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_ai_send_query_ct_by_cn_query(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="find my container CSNU6393245")
-        data = response.json()
+        stream_text = response.text
         assert response.status_code == 200
-        assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
 
     def test_parce_from_joom(self, api_client):
         parcel_api = api_client(ParcelApi)
@@ -599,10 +599,10 @@ class TestApi():
             "portFromFees": False,
             "portToFees": False,
             "shippingType": "FCL",
-            "coordinatesFrom": [49.485997674824, 0.10705362955764],
-            "coordinatesTo": [24.333333333333, 56.75],
+            "coordinatesFrom": [51.9043833521111, 4.442446816843265],
+            "coordinatesTo": [19.046656981761096, 72.83729440336688],
             "date": from_date,
-            "container": "ST40"
+            "container": "ST20"
         }
 
         response = api.get_rates(variables)
