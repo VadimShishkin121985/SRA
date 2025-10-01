@@ -59,7 +59,7 @@ class TestApi():
 
     def test_get_container_number_info(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_tracking_by_any_number(number="LYGU3109868", type="CT", force_update=False,
+        response = tracking_api.get_tracking_by_any_number(number="MSNU9731198", type="CT", force_update=False,
                                                            route=False, ais=False)
         data = response.json()
         assert response.status_code == 200
@@ -90,14 +90,14 @@ class TestApi():
 
     def test_route_information_by_bl(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="TAOE88677600", type="BL", sealine="HDMU")
+        response = tracking_api.get_route_information_by_any_number(number="ONEYOS3NA1938600", type="BL", sealine="HDMU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
 
     def test_route_information_by_bk(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="TAOF91227201", type="BK", sealine="HDMU")
+        response = tracking_api.get_route_information_by_any_number(number="1811X023PE02032T1", type="BK", sealine="HDMU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
