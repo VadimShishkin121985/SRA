@@ -67,7 +67,7 @@ class TestApi():
 
     def test_get_bl_info(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_tracking_by_any_number(number="ONEYOS3NA1938600", type="BL", force_update=False,
+        response = tracking_api.get_tracking_by_any_number(number="GQL0328936", type="BL", force_update=False,
                                                            route=False, ais=False)
         data = response.json()
         assert response.status_code == 200
@@ -90,7 +90,7 @@ class TestApi():
 
     def test_route_information_by_bl(self, api_client):
         tracking_api = api_client(CTApi)
-        response = tracking_api.get_route_information_by_any_number(number="ONEYOS3NA1938600", type="BL", sealine="HDMU")
+        response = tracking_api.get_route_information_by_any_number(number="GQL0328936", type="BL", sealine="HDMU")
         data = response.json()
         assert response.status_code == 200
         assert data["status"] != "error", f"Unexpected error: {data.get('message')}"
@@ -316,70 +316,70 @@ class TestApi():
         response = ai_api.post_ai_query(query="What is SeaRates?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_2_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="How does SeaRates work?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_3_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a DFA member?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_4_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a carrier?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_5_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a vendor?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_6_default_question(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="Who is a shipper?")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_le_questions_sea(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 20ft container from new york to washington by sea")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_le_questions_air(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 2000 kg from new york to washington by air")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_le_questions_land(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="rate 200 kg from new york to washington by land")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_ai_send_query_ct_by_cn_query(self, api_client):
         ai_api = api_client(AIApi)
         response = ai_api.post_ai_query(query="find my container CSNU6393245")
         stream_text = response.text
         assert response.status_code == 200
-        assert '{"done":true}' in stream_text.replace(" ", ""), "Stream did not finish properly"
+        assert '"done":true' in stream_text
 
     def test_parce_from_joom(self, api_client):
         parcel_api = api_client(ParcelApi)
