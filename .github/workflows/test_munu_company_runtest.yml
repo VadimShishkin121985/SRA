@@ -1,139 +1,73 @@
-name: Test Menu Company
+name: CI Tests + Allure + Telegram
 
 on:
-  schedule:
-    # 7:00 по Киеву (UTC+2 → 5:00 UTC)
-    - cron: '0 5 * * *'
-
+  push:
+    branches: [ main ]
+  pull_request:
   workflow_dispatch:
-    inputs:
-      test_suite:
-        description: 'Select test suite'
-        required: true
-        type: choice
-        options:
-          - Regression
-          - Tracking
-        default: Regression
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
-# =========================================================
-# 🧪 TESTS
-# =========================================================
-  test:
+  tests:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest-rerunfailures webdriver-manager
+          pip install pytest allure-pytest
 
       - name: Run tests
         run: |
-          mkdir -p allure-results
-
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            TEST_FILE="tests/test_menu_company.py"
-          else
-            if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
-              TEST_FILE="tests/test_menu_company.py"
-            else
-              TEST_FILE="tests/tests.py"
-            fi
-          fi
-
-          echo "Running tests from: $TEST_FILE"
-
-          pytest $TEST_FILE \
-            --reruns=1 \
-            --reruns-delay=3 \
-            --disable-warnings \
-            -v \
-            --alluredir=allure-results \
-            --junitxml=allure-results/junit.xml || true
-
-      - name: Upload allure results
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
-          retention-days: 3
-
-# =========================================================
-# 📊 ALLURE REPORT + HISTORY
-# =========================================================
-  report:
-    needs: test
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: microsoft
-          java-version: 17
-
-      - name: Install Allure
-        run: |
-          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.tgz
-          tar -xzf allure-2.25.0.tgz
-          sudo mv allure-2.25.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-
-      - name: Download allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
-
-      # ⬇️ ВАЖНО: подтягиваем прошлую history из Pages
-      - name: Download previous Pages
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: previous-pages
-        continue-on-error: true
-
-      - name: Restore Allure history
-        run: |
-          if [ -d "previous-pages/history" ]; then
-            mkdir -p allure-results/history
-            cp -r previous-pages/history/* allure-results/history/
-          fi
+          pytest --alluredir=allure-results || true
 
       - name: Generate Allure report
         run: |
-          allure generate allure-results -o _site --clean
+          sudo apt-get update
+          sudo apt-get install -y allure
+          allure generate allure-results -o allure-report --clean || true
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload Allure report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          path: _site
+          name: allure-report
+          path: allure-report
+          retention-days: 7
 
-# =========================================================
-# 🚀 PUBLISH TO GITHUB PAGES
-# =========================================================
-  publish:
-    needs: report
+  telegram:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
+    needs: tests
+    if: always()
 
     steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - name: Send Telegram message
+        if: always()
+        run: |
+          STATUS="${{ needs.tests.result }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          if [ "$STATUS" = "success" ]; then
+            ICON="✅"
+          else
+            ICON="❌"
+          fi
+
+          MESSAGE="$ICON CI finished
+          Repo: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Status: $STATUS
+          Run: $RUN_URL"
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=HTML \
+            -d text="$MESSAGE"
