@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuReferences(BasePage):
     _instance = None
-    URL = 'https://release.searates.dev/'
+    URL = 'https://www.searates.com/'
 
     def open(self) -> 'MenuReferences':
         self.driver.get(self.URL)
@@ -22,11 +22,11 @@ class MenuReferences(BasePage):
         self.driver: WebDriver = driver
         self.menu_references_locator = (By.XPATH, '//a[@data-dropdown="references"]')
         self.world_sea_ports_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="World sea ports"]')
-        self.find_port_by_shipping_line_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Find ports by shipping line"]')
-        self.sea_line_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Sea lines explorer"]')
+        self.find_port_by_shipping_line_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Find ports by shipping line"]')
+        self.sea_line_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Sea lines explorer"]')
         self.unit_converter_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Unit converter"]')
         self.demurage_and_storage_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Demurrage & Storage"]')
-        self.shipping_lines_directory_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Shipping lines directory"]')
+        self.shipping_lines_directory_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Shipping lines directory"]')
         self.incoterms_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Incoterms"]')
         self.imo_classes_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="IMO classes"]')
         self.reefer_cargo_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Reefer cargo"]')
@@ -42,6 +42,8 @@ class MenuReferences(BasePage):
         self.type_of_railway_container_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Types of railway wagons"]')
         self.vessel_types_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Vessel types"]')
         self.truck_types_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Truck types"]')
+        self.carrier_directory_page_locator = (By.XPATH, '//div[@class="dropMenu__content drop-references__content js-drop-content"]//span[@class="dropMenu__text_icon dropMenu__text-width-225"][normalize-space()="Carrier Directory"]')
+
 
     def move_mouse_to_references(self):
         #self.privacy_setting()
@@ -73,11 +75,15 @@ class MenuReferences(BasePage):
         self.driver.find_element(*self.demurage_and_storage_locator).click()
         self.waiter_with_assert('.U17pN5')
 
+    def go_to_carrier_directory_page(self):
+        self.move_mouse_to_references()
+        self.driver.find_element(*self.carrier_directory_page_locator).click()
+        self.waiter_with_assert('#carrier_directory_root')
+
     def go_to_sea_lines_explorer_page(self):
         self.move_mouse_to_references()
         self.driver.find_element(*self.sea_line_explorer_locator).click()
-        time.sleep(5)
-        self.waiter_with_assert('.w-tracking')
+        self.waiter_with_assert('.platform-filter')
 
     def go_to_unit_converter_page(self):
         self.move_mouse_to_references()

@@ -36,7 +36,7 @@ def chrome(request):
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-infobars")
     chrome_options.add_argument("--disable-browser-side-navigation")
-    chrome_options.add_argument("--remote-debugging-port=9222")
+    #chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
@@ -65,16 +65,16 @@ def chrome(request):
     })
 
     # Для гита
-    service = Service()
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+    # service = Service()
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
+    # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    # driver.implicitly_wait(60)  # Увеличиваем время ожидания элементов
 
     # Для ПК
-    # service = Service(ChromeDriverManager().install())
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
-    # driver.set_page_load_timeout(30)  # Увеличиваем таймаут загрузки страницы
-    # driver.implicitly_wait(20)  # Увеличиваем время ожидания элементов
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    driver.implicitly_wait(60)  # Увеличиваем время ожидания элементов
 
 
     # Устанавливаем драйвер для класса теста

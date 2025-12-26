@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuFooter(BasePage):
     _instance = None
-    URL = 'https://release.searates.dev/'
+    URL = 'https://www.searates.com/'
 
     def open(self) -> 'MenuFooter':
         self.driver.get(self.URL)
@@ -49,6 +49,7 @@ class MenuFooter(BasePage):
         self.footer_freight_index_locator = (By.XPATH, '//a[normalize-space()="Freight Index"]')
         self.footer_find_a_tool_locator = (By.XPATH, '//a[@class="footer__item"][normalize-space()="Find a tool"]')
         self.footer_affiliates_locator = (By.XPATH, '//a[normalize-space()="Affiliates"]')
+        self.footer_corporate_locator = (By.XPATH, '//a[text()="Corporate Products"]')
 
     def move_mouse_to_footer(self):
         time.sleep(3)
@@ -73,13 +74,13 @@ class MenuFooter(BasePage):
     def go_to_container_tracking_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_ct_locator).click()
-        self.waiter_with_assert('#tracking_system_root')
+        self.waiter_with_assert('.unified-tracking-S5Qsna')
         self.driver.back()
 
     def go_to_air_tracking_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_at_locator).click()
-        self.waiter_with_assert('#tracking_system_root')
+        self.waiter_with_assert('.unified-tracking-S5Qsna')
         self.driver.back()
 
     def go_to_ship_schedules_from_footer(self):
@@ -127,7 +128,7 @@ class MenuFooter(BasePage):
     def go_to_request_it_tool_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_tools_request_it_locator).click()
-        self.waiter_with_assert('.FLK0Cc')
+        self.waiter_with_assert('.request-it-quote-sUN8OI')
         self.driver.back()
 
     def go_to_shippers_from_footer(self):
@@ -193,7 +194,7 @@ class MenuFooter(BasePage):
     def go_to_help_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_company_help_locator).click()
-        self.waiter_with_assert('.naIIwU')
+        self.waiter_with_assert('.categories')
         self.driver.back()
 
     def go_to_contact_us_from_footer(self):
@@ -240,3 +241,7 @@ class MenuFooter(BasePage):
         self.driver.find_element(*self.footer_affiliates_locator).click()
         self.waiter_with_assert('.btn-box')
 
+    def go_to_corporates_products_from_footer(self):
+        self.move_mouse_to_footer()
+        self.driver.find_element(*self.footer_corporate_locator).click()
+        self.waiter_with_assert('.texts')

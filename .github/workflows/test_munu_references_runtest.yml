@@ -1,10 +1,10 @@
-name: Automated tests
+name: Test Menu References
 
 on:
   schedule:
     # Запуск в 7:00 по Киеву (UTC+2)
     # Указываем 5:00 UTC, что соответствует 7:00 по Киеву
-    - cron: '0 5 * * *'
+    - cron: '0 7 * * *'
 
   workflow_dispatch:  # Добавляем возможность ручного запуска
     inputs:
@@ -112,15 +112,15 @@ jobs:
         run: |
           mkdir -p allure-results
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            # Если запуск по расписанию - только test_menu.py
-            pytest tests/test_menu.py --reruns=1 --reruns-delay=3 --disable-warnings -v \
+            # Если запуск по расписанию - только test_menu_references.py
+            pytest tests/test_menu_references.py --reruns=1 --reruns-delay=3 --disable-warnings -v \
               --alluredir=allure-results \
               --junitxml=allure-results/junit.xml || true
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             # Определяем какой файл запускать на основе выбора
             TEST_FILE=""
             if [[ "${{ github.event.inputs.test_file }}" == "Regression" ]]; then
-              TEST_FILE="tests/test_menu.py"
+              TEST_FILE="tests/test_menu_references.py"
             elif [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
               TEST_FILE="tests/tests.py"
             fi
@@ -141,7 +141,7 @@ jobs:
           if [ -f "allure-results/junit.xml" ]; then
             echo "Rerunning failed tests..."
             # Определяем префикс для перезапуска на основе выбранного файла
-            TEST_PREFIX="tests/test_menu.py"
+            TEST_PREFIX="tests/test_menu_references.py"
             if [[ "${{ github.event.inputs.test_file }}" == "Tracking" ]]; then
               TEST_PREFIX="tests/tests.py"
             fi

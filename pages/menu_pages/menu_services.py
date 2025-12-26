@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuServices(BasePage):
     _instance = None
-    URL = 'https://release.searates.dev/'
+    URL = 'https://www.searates.com/'
 
     def open(self) -> 'MenuServices':
         self.driver.get(self.URL)
@@ -41,6 +41,8 @@ class MenuServices(BasePage):
         self.customs_clearance_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Customs clearance"]')
         self.abandoned_cargoes_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Abandoned cargoes"]')
         self.teen_foot_containers_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="10-foot containers"]')
+        self.pharmaceutical_services_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Pharmaceutical & Healthcare Logistics"]')
+        self.vehicle_automotive_shipping_locator = (By.XPATH, '//div[@class="dropMenu__content drop-services__content js-drop-content"]//span[@class="dropMenu__text"][normalize-space()="Vehicle & Automotive Shipping"]')
 
     def move_mouse_to_services(self):
         #self.privacy_setting()
@@ -79,22 +81,22 @@ class MenuServices(BasePage):
     def go_to_importers_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.importer_page_locator).click()
-        self.waiter_with_assert('.section-btn.cu_open-form')
+        self.waiter_with_assert('.section-btn')
 
     def go_to_fcl_shipping_services_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.fcl_shipping_services_locator).click()
-        self.waiter_with_assert('.intro-picture')
+        self.waiter_with_assert('.section-btn')
 
     def go_to_lcl_shipping_services_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.lcl_shipping_services_locator).click()
-        self.waiter_with_assert('.btn-intro')
+        self.waiter_with_assert('.section-link-btn')
 
     def go_to_bulk_services_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.bulk_shipping_services_locator).click()
-        self.waiter_with_assert('.image-intro')
+        self.waiter_with_assert('.section-link-btn')
 
     def go_to_dangerous_cargoes_services_page(self):
         self.move_mouse_to_services()
@@ -155,3 +157,13 @@ class MenuServices(BasePage):
         self.move_mouse_to_services()
         self.driver.find_element(*self.teen_foot_containers_locator).click()
         self.waiter_with_assert('.wrapper')
+
+    def go_to_pharmaceutical_logistics_page(self):
+        self.move_mouse_to_services()
+        self.driver.find_element(*self.pharmaceutical_services_locator).click()
+        self.waiter_with_assert('.section__hero__content')
+
+    def go_to_vehicle_automotive_shipping(self):
+        self.move_mouse_to_services()
+        self.driver.find_element(*self.vehicle_automotive_shipping_locator).click()
+        self.waiter_with_assert('.section__hero__container')

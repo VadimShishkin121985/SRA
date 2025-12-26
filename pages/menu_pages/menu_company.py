@@ -11,7 +11,7 @@ from tests.base_page import BasePage
 
 class MenuCompany(BasePage):
     _instance = None
-    URL = 'https://release.searates.dev/'
+    URL = 'https://www.searates.com/'
 
     def open(self) -> 'MenuCompany':
         self.driver.get(self.URL)
@@ -52,7 +52,7 @@ class MenuCompany(BasePage):
     def go_to_faqs_page(self):
         self.move_mouse_to_company()
         self.driver.find_element(*self.faqs_locator).click()
-        self.waiter_with_assert('.naIIwU')
+        self.waiter_with_assert('.search-icon')
 
     def go_to_blog_page(self):
         self.move_mouse_to_company()
