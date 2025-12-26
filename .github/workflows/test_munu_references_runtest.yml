@@ -296,7 +296,7 @@ jobs:
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
           # Формируем сообщение для Telegram
-          MESSAGE="📊 *Test Report Summary:*
+          MESSAGE="📊 *Test Report References:*
           Total Tests: $TOTAL
           ✅ Passed: $PASSED
           ❌ Failed: $FAILED
