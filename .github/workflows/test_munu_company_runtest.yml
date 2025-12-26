@@ -41,7 +41,11 @@ jobs:
           pip install -r requirements.txt
           pip install pytest-rerunfailures webdriver-manager lxml
 
-      # Скачиваем прошлую историю
+      # Подготовка истории (даже пустой)
+      - name: Prepare allure history folder
+        run: mkdir -p allure-results/history
+
+      # Скачиваем прошлую историю (если есть)
       - name: Download Allure history
         uses: actions/download-artifact@v4
         with:
@@ -100,6 +104,10 @@ jobs:
         with:
           distribution: microsoft
           java-version: 17
+
+      # Установка xmllint для анализа junit
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
 
       - name: Install Allure
         run: |
