@@ -65,16 +65,16 @@ def chrome(request):
     })
 
     # Для гита
-    # service = Service()
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
-    # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
-    # driver.implicitly_wait(60)  # Увеличиваем время ожидания элементов
-
-    # Для ПК
-    service = Service(ChromeDriverManager().install())
+    service = Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
     driver.implicitly_wait(60)  # Увеличиваем время ожидания элементов
+
+    # Для ПК
+    # service = Service(ChromeDriverManager().install())
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
+    # driver.set_page_load_timeout(60)  # Увеличиваем таймаут загрузки страницы
+    # driver.implicitly_wait(60)  # Увеличиваем время ожидания элементов
 
 
     # Устанавливаем драйвер для класса теста
