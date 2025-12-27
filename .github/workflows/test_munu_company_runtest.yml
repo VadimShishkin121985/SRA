@@ -2,8 +2,7 @@ name: Test Menu Company
 
 on:
   schedule:
-    # 7:00 по Киеву (UTC+2 → 5:00 UTC)
-    - cron: '0 5 * * *'
+    - cron: '0 7 * * *'
   workflow_dispatch:
     inputs:
       test_suite:

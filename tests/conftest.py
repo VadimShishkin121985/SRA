@@ -6,6 +6,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 import tempfile
 import os
 import time
+import random
+
+# ===============================
+# Cloudflare-safe delay fixture
+# ===============================
+MIN_DELAY = 30   # секунд
+MAX_DELAY = 60   # секунд
+
+@pytest.fixture(autouse=True)
+def delay_between_tests():
+    delay = random.randint(MIN_DELAY, MAX_DELAY)
+    print(f"\n[CF SAFE MODE] Sleeping {delay} seconds before next test")
+    time.sleep(delay)
 
 
 @pytest.fixture

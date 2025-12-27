@@ -2,9 +2,7 @@ name: Test Menu References
 
 on:
   schedule:
-    # Запуск в 7:00 по Киеву (UTC+2)
-    # Указываем 5:00 UTC, что соответствует 7:00 по Киеву
-    - cron: '0 7 * * *'
+    - cron: '0 8 * * *'
 
   workflow_dispatch:  # Добавляем возможность ручного запуска
     inputs:
