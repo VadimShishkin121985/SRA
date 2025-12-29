@@ -53,7 +53,7 @@ class MenuTools(BasePage):
     def go_to_container_tracking_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.container_tracking_locator).click()
-        self.waiter_with_assert('#tracking_system_root')
+        self.waiter_with_assert('.app-root-unified_tracking')
 
     def waiter_with_assert(self, selector):
         wait = WebDriverWait(self.driver, 50)
@@ -76,14 +76,15 @@ class MenuTools(BasePage):
     def go_to_air_tracking_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.air_tracking_locator).click()
-        original_window = self.driver.current_window_handle
-        WebDriverWait(self.driver, 10).until(
-            lambda driver: len(driver.window_handles) > 1)
-        new_window = [window for window in self.driver.window_handles if window != original_window][0]
-        self.driver.switch_to.window(new_window)
-        self.waiter_with_assert('#tracking_system_root')
-        self.driver.close()
-        self.driver.switch_to.window(original_window)
+        self.waiter_with_assert('.app-root-unified_tracking')
+        # original_window = self.driver.current_window_handle
+        # WebDriverWait(self.driver, 10).until(
+        #     lambda driver: len(driver.window_handles) > 1)
+        # new_window = [window for window in self.driver.window_handles if window != original_window][0]
+        # self.driver.switch_to.window(new_window)
+        # self.waiter_with_assert('#tracking_system_root')
+        # self.driver.close()
+        # self.driver.switch_to.window(original_window)
 
     def go_to_load_calculator_page(self):
         self.move_mouse_to_tools()
@@ -95,7 +96,7 @@ class MenuTools(BasePage):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.logistics_map_locator).click()
         time.sleep(5)
-        self.waiter_with_assert('.logistics-map-HpouLQ')
+        self.waiter_with_assert('#logistics_map')
 
     def go_to_distance_and_time_page(self):
         self.move_mouse_to_tools()
@@ -142,7 +143,7 @@ class MenuTools(BasePage):
     def go_to_request_it_quote_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.request_it_qoute_locator).click()
-        self.waiter_with_assert('.jzUXQV')
+        self.waiter_with_assert('#request_it_quote_app_root')
 
     def go_to_co2_page(self):
         self.move_mouse_to_tools()

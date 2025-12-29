@@ -52,7 +52,6 @@ class TestToolsMenu:
 
     def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
-        time.sleep(2)
 
     def test_menu_tools_air_tracking(self):
         self.page_menu_tools.go_to_air_tracking_page()
