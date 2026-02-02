@@ -60,7 +60,7 @@ class MenuServices(BasePage):
     def go_to_request_a_quote_page(self):
         self.move_mouse_to_services()
         self.driver.find_element(*self.request_a_quote_locator).click()
-        self.waiter_with_assert('.eLavM')
+        self.waiter_with_assert('#request_a_quote')
 
     def go_to_all_shipping_leads_page(self):
         self.move_mouse_to_services()
