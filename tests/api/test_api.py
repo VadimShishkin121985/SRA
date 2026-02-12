@@ -394,6 +394,7 @@ class TestApi():
         data = response.json()
         assert response.status_code == 200
         assert data.get("status_code") != "error", f"Unexpected error: {data.get('message')}"
+        assert data.get("status_code") != "API_KEY_ACCESS_DENIED", "API key access denied"
 
     def test_parce_company_info(self, api_client):
         parcel_api = api_client(ParcelApi)
