@@ -9,16 +9,12 @@ from pages.menu_pages.menu_references import MenuReferences
 from pages.menu_pages.menu_company import MenuCompany
 from pages.menu_pages.footer_page import MenuFooter
 
-@pytest.mark.browser_scope('function')
-@pytest.mark.usefixtures('chrome')
+@pytest.mark.usefixtures("chrome")
 class TestToolsMenu:
-    _class_cleanup = False
 
     @property
     def page_menu_tools(self):
-        if not hasattr(self, '_page_menu_tools'):
-            self._page_menu_tools = MenuTools(self.driver).open()
-        return self._page_menu_tools
+        return MenuTools(self.driver).open()
 
     @property
     def page_menu_services(self):
@@ -38,12 +34,6 @@ class TestToolsMenu:
             self._page_menu_company = MenuCompany(self.driver).open()
         return self._page_menu_company
 
-    @property
-    def page_footer(self):
-        if not hasattr(self, '_page_footer'):
-            self._page_footer = MenuFooter(self.driver).open()
-        return self._page_footer
-
     def test_menu_tools_le(self):
         try:
             self.page_menu_tools.go_to_logistic_explorer_page()
@@ -53,8 +43,11 @@ class TestToolsMenu:
     def test_menu_tools_ct(self):
         self.page_menu_tools.go_to_container_tracking_page()
 
-    def test_menu_tools_air_tracking(self):
-        self.page_menu_tools.go_to_air_tracking_page()
+    def test_menu_tools_tracking_system(self):
+        self.page_menu_tools.go_to_tracking_system_page()
+
+    def test_menu_tools_vessel_tracking(self):
+        self.page_menu_tools.go_to_vessel_tracking_page()
 
     def test_menu_tools_schedule(self):
         self.page_menu_tools.go_to_schedules_page()
@@ -71,19 +64,16 @@ class TestToolsMenu:
     def test_menu_tools_fi(self):
          self.page_menu_tools.go_to_freight_index_page()
 
-    def test_menu_tools_route_planner(self):
-        self.page_menu_tools.go_to_route_planer_page()
+    def test_menu_tools_rms(self):
+        self.page_menu_tools.go_to_rate_management_system_page()
 
     def test_menu_tools_co2(self):
         self.page_menu_tools.go_to_co2_page()
 
-    def test_menu_tools_erp(self):
-        self.page_menu_tools.go_to_erp_page()
-
     def test_menu_tools_dev_portal(self):
         self.page_menu_tools.go_to_developer_portal_page()
 
-    def test_menu_tools_fid_tools(self):
+    def test_menu_tools_find_tools(self):
         self.page_menu_tools.go_to_find_a_tools_page()
 
     def test_menu_request_it_quote(self):

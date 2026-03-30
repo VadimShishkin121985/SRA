@@ -21,12 +21,12 @@ class MenuTools(BasePage):
         self.logistic_explorer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Logistics Explorer"]')
         self.container_tracking_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Container Tracking"]')
         self.ship_schedules_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Ship Schedules"]')
-        self.air_tracking_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Air Tracking"]')
+        self.tracking_systems_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Tracking System"]')
         self.load_calculator_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Load Calculator"]')
         self.logistics_map_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Logistics Map"]')
         self.distance_and_time_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Distance & Time"]')
-        self.route_planer_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Route Planner"]')
-        self.erp_page_locator =(By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__title-text"][normalize-space()="SeaRates ERP"]')
+        self.rate_managment_system_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Rate Management System"]')
+        self.vessel_tracking_locator =(By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Vessel Tracking"]')
         self.dev_portal_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__text_tools"][normalize-space()="Developer portal"]')
         self.element_devportal_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list__linkFooter dropMenu__list dropMenu__list_tools dropMenu__list_tools_footer js-copy1"]//a[2]')
         self.freight_index_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//p[@class="dropMenu__title"][normalize-space()="Freight Index"]')
@@ -73,10 +73,10 @@ class MenuTools(BasePage):
         self.driver.find_element(*self.ship_schedules_locator).click()
         self.waiter_with_assert('.FrpaIW')
 
-    def go_to_air_tracking_page(self):
+    def go_to_tracking_system_page(self):
         self.move_mouse_to_tools()
-        self.driver.find_element(*self.air_tracking_locator).click()
-        self.waiter_with_assert('.app-root-unified_tracking')
+        self.driver.find_element(*self.tracking_systems_locator).click()
+        self.waiter_with_assert('.unified-tracking-JhpiNQ')
         # original_window = self.driver.current_window_handle
         # WebDriverWait(self.driver, 10).until(
         #     lambda driver: len(driver.window_handles) > 1)
@@ -109,15 +109,15 @@ class MenuTools(BasePage):
         #expected_text = 'Select port (place) of origin and port (place) of destination, then time interval for your schedule and hit Search button.'
         #assert expected_text == text, f"Текст '{expected_text}' не соответствует полученому тексту '{text}'"
 
-    def go_to_route_planer_page(self):
+    def go_to_rate_management_system_page(self):
         self.move_mouse_to_tools()
-        self.driver.find_element(*self.route_planer_locator).click()
-        self.waiter_with_assert('.ro-project')
+        self.driver.find_element(*self.rate_managment_system_locator).click()
+        self.waiter_with_assert('#authApps')
 
-    def go_to_erp_page(self):
+    def go_to_vessel_tracking_page(self):
         self.move_mouse_to_tools()
-        self.driver.find_element(*self.erp_page_locator).click()
-        self.waiter_with_assert('.subtitle')
+        self.driver.find_element(*self.vessel_tracking_locator).click()
+        self.waiter_with_assert('.unified-tracking-PfCfqw')
 
     def go_to_se_page(self):
         self.move_mouse_to_tools()
@@ -127,7 +127,7 @@ class MenuTools(BasePage):
     def go_to_freight_index_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.freight_index_locator).click()
-        self.waiter_with_assert('.gOsv4N')
+        self.waiter_with_assert('.freight-index-hyeAAM')
 
     def go_to_developer_portal_page(self):
         self.move_mouse_to_tools()
