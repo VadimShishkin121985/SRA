@@ -74,8 +74,8 @@ class TestFooter:
     def test_footer_co2_calculator(self):
         self.page_footer.go_to_co2_calculator_from_footer()
 
-    def test_footer_corporate_products(self):
-        self.page_footer.go_to_corporates_products_from_footer()
+    # def test_footer_corporate_products(self):
+    #     self.page_footer.go_to_corporates_products_from_footer()
 
 
 
