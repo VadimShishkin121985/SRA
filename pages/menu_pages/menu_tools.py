@@ -34,7 +34,7 @@ class MenuTools(BasePage):
         self.find_tols_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//a[@class="dropMenu__item dropMenu__item_moreTools"]//div[@class="dropMenu__block"]')
         self.assert_element_find_from_tols_page_locator = (By.XPATH, '//a[@class="button pricing"]')
         self.request_it_qoute_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list__linkFooter dropMenu__list dropMenu__list_tools dropMenu__list_tools_footer js-copy1"]//a[1]')
-        self.carbon_emition_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list__columnThird dropMenu__list-column"]//a[2]//div[1]//p[1]')
+        self.carbon_emition_locator = (By.XPATH, '//div[@class="dropMenu__content js-drop-content"]//span[@class="dropMenu__title-text"][normalize-space()="CO2 Calculator"]')
         self.searates_expres_locator = (By.XPATH, '//div[@class="dropMenu"]//div[@class="dropMenu__list__columnThird dropMenu__list-column"]//a[3]//div[1]//p[1]')
 
 
@@ -117,7 +117,7 @@ class MenuTools(BasePage):
     def go_to_vessel_tracking_page(self):
         self.move_mouse_to_tools()
         self.driver.find_element(*self.vessel_tracking_locator).click()
-        self.waiter_with_assert('.unified-tracking-PfCfqw')
+        self.waiter_with_assert('#vessel_tracking_root')
 
     def go_to_se_page(self):
         self.move_mouse_to_tools()
