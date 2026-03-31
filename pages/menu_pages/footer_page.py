@@ -229,7 +229,7 @@ class MenuFooter(BasePage):
     def go_to_freight_index_from_footer(self):
         self.move_mouse_to_footer()
         self.driver.find_element(*self.footer_freight_index_locator).click()
-        self.waiter_with_assert('.bHkzLO')
+        self.waiter_with_assert('#freight-index')
 
     def go_to_find_a_tool_from_footer(self):
         self.move_mouse_to_footer()
